@@ -8,9 +8,9 @@
 We will meet for at least an hour, with one of us taking notes to describe the work that has been done for the week. 
 We will keep the notes on a shared google drive folder.
 
-2. **Assistance** We will all have eachother as friends on discord and we have eachothers emails if we need to contact eachother. 
+2. **Assistance** We will all have each other as friends on discord and we have each other's emails if we need to contact each other. 
 
-3. **Respect** We will make sure that we hold eachother accountable in both sharing and valuing eachother's ideas. If one of us is not contributing
+3. **Respect** We will make sure that we hold each other accountable in both sharing and valuing each other's ideas. If one of us is not contributing
 enough or if one of us is contributing too much, we will all make sure to call them out without fear. With our signatures at the bottom of
 this document, we will declare that we will all work to have a positive group environment.
 
@@ -31,3 +31,4 @@ resiolve the conflict in a mature manner. If there is a mass conflict between al
 ### Signatures:
 Ryder Heit - ryderch2  
 Jean-Luc Charlier - jcharl4
+Luke Peng - lukep2
