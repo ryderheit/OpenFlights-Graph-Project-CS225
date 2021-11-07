@@ -30,5 +30,5 @@ resiolve the conflict in a mature manner. If there is a mass conflict between al
 
 ### Signatures:
 Ryder Heit - ryderch2  
-Jean-Luc Charlier - jcharl4
-Luke Peng - lukep2
+Jean-Luc Charlier - jcharl4  
+Luke Peng - lukep2  
