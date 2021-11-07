@@ -29,5 +29,5 @@ the rest of the group will help pick up the slack and help them out. However, if
 resiolve the conflict in a mature manner. If there is a mass conflict between all 4 of us, we will email our group mentor or ask an outside friend for council.
 
 ### Signatures:
-Ryder Heit - ryderch2
+Ryder Heit - ryderch2  
 Jean-Luc Charlier - jcharl4
