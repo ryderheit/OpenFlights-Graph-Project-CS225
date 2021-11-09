@@ -7,7 +7,7 @@ or the most critical airports. The main goal of this project will be to develop 
 and then the routes, which will be our directed edges. We will parse through the data so that we can save only the information that we want, but keep the full raw dataset to potentially
 be used in final additions to bolster the project. If there are any errors, we will either edit certain edges or vectors based on the simplest way to fix the error.
 
-3. **Graph Algorithms:**We are planning on two main algorithms and a traversal. The traversal will simply be a Breadth First Search Traversal, which will be O(n). 
+3. **Graph Algorithms:** We are planning on two main algorithms and a traversal. The traversal will simply be a Breadth First Search Traversal, which will be O(n). 
 For our algorithms, we will have a shortest path algorithm that will allow us to input two airports, and return the shortest path between the two airports
 which will represent the best path to get to each airport. We will most likely use Floyd-Warshall's Algorithm which is O(n<sup>3</sup>). We will also implement a betweeness centrality
 algorithm to determine which airports are the most important to the world which runs in O(n*m). 
