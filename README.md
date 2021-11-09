@@ -1,5 +1,7 @@
 # CS225 Final Project for sknight5-ryderch2-lukep2-jcharl4
 
+[Project Proposal](https://github-dev.cs.illinois.edu/cs225-fa21/sknight5-ryderch2-lukep2-jcharl4/blob/main/project_proposal.md)
+
 ## Team Contract
 
 ### Communication:
@@ -32,4 +34,5 @@ resiolve the conflict in a mature manner. If there is a mass conflict between al
 Ryder Heit - ryderch2  
 Jean-Luc Charlier - jcharl4  
 Luke Peng - lukep2  
-Sam Knight - sknight5 
+Sam Knight - sknight5  
+
