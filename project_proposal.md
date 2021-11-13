@@ -12,7 +12,7 @@ For our algorithms, we will have a shortest path algorithm that will allow us to
 which will represent the best path to get to each airport. We will most likely use Floyd-Warshall's Algorithm which is O(n<sup>3</sup>). We will also implement a betweeness centrality
 algorithm to determine which airports are the most important to the world which runs in O(n*m). 
 
-4. **Timeline:** We will try and get through all the setup for the program by the start of Thanksgiving break; this includes data acquisition and refining, data representation,
-further research on how the algorithms are accomplished, and an early testing suite developed. By the mid-project checkin, we will have the basics of each algorithm done. This means 
+4. **Timeline:** We will try and get through all the setup for the program by 11/19 at the end of the day; this includes data acquisition and refining, data representation,
+further research on how the algorithms are accomplished, and an early testing suite developed. By the mid-project checkin (11/26-12/1), we will have the basics of each algorithm done. This means 
 they all work and are tested thoroughly, though not perfect. The next week will be spent cleaning up the code base, and adding any final touches on top of the base algorithms. The 
-final week will be spent writing the report and doing the presentation.
+final week (12/5-12/11) will be spent writing the report and doing the presentation.
