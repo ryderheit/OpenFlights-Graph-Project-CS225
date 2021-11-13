@@ -4,8 +4,8 @@
 or the most critical airports. The main goal of this project will be to develop a tool to help learn about flight-paths aroudn the world.
 
 2. **Dataset Acquisition:** We are getting our data from [openflights.org](https://openflights.org/data.html). We will download two raw text files for the airports which will be our vertices,
-and then the routes, which will be our directed edges. We will parse through the data so that we can save only the information that we want, but keep the full raw dataset to potentially
-be used in final additions to bolster the project. If there are any errors, we will either edit certain edges or vectors based on the simplest way to fix the error.
+and then the routes, which will be our directed edges. Each node will represent an airport and store its unique OpenFlights ID and coordinates in a tuple. This data will come from one of the text files.
+Each edge will represent a one-way route from one airport to another and store the its length, which can be calculated from the coordinates of the two airports. This data will come from the other text file. If there are any errors, we will either edit certain edges or vectors based on the simplest way to fix the error.
 
 3. **Graph Algorithms:** We are planning on two main algorithms and a traversal. The traversal will simply be a Breadth First Search Traversal, which will be O(n). 
 For our algorithms, we will have a shortest path algorithm that will allow us to input two airports, and return the shortest path between the two airports
