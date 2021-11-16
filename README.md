@@ -1,6 +1,6 @@
 # CS225 Final Project for sknight5-ryderch2-lukep2-jcharl4
 
-[Project Proposal](https://github-dev.cs.illinois.edu/cs225-fa21/sknight5-ryderch2-lukep2-jcharl4/blob/main/project_proposal.md)
+[Project Proposal](https://github-dev.cs.illinois.edu/cs225-fa21/sknight5-ryderch2-lukep2-jcharl4/blob/main/notes/project_proposal.md)
 
 ## Team Contract
 
