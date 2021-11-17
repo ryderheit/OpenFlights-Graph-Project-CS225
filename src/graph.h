@@ -1,18 +1,21 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <string>
-#include <iostream>
+#include <list>
 #include <map>
 
 using std::vector;
 using std::string;
 using std::map;
+using std::list;
 
 
 struct Vertex {
+  int ID;
   string code;
-  vector<Edge*> adjacent;
+  list<Edge>* edges_;
 };
 
 struct Edge {
