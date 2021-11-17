@@ -1,8 +1,7 @@
 #include "graph.h"
 
 
-auto setupmap(string airports) {
-  fopen(airports);
+auto readAirports(std::istream& airports) {
   while (!EOF) {
     readline();
     auto vertex = new Vertex;
@@ -12,8 +11,7 @@ auto setupmap(string airports) {
   }
 }
 
-auto fillmap(string routes) {
-  fopen(routes);
+auto readRoutes(std::istream& routes) {
   while (!EOF) {
     readline();
     Edge* route = new Edge;
@@ -25,8 +23,18 @@ auto fillmap(string routes) {
   }
 }
     
+auto Graph::insertEdge(int src, int dest, int weight) -> void {}
+auto Graph::insertVertex(int ID, string code) -> void {}
 
-Graph::Graph(string airports, string routes) {
-  setupmap(airporsts);
-  fillmap(routes);
+Graph::Graph(string airports_file, string routes_file) {
+  std::ifstream airports(airports_file);
+  std::ifstream routes(routes_file);
+
+  if (airports.is_open() && routes.is_open()) {
+    fillNode(airports);
+    fillEdge(routes);
+
+    airports.close(); routes.close();
+  } else 
+    printf("File not found, try again");
 }

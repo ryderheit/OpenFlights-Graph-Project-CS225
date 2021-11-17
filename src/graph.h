@@ -4,31 +4,42 @@
 #include <vector>
 #include <string>
 #include <list>
-#include <map>
+#include <unordered_map>
 
 using std::vector;
 using std::string;
-using std::map;
 using std::list;
 
 
-struct Vertex {
-  int ID;
-  string code;
-  list<Edge>* edges_;
-};
 
-struct Edge {
-  int src, dest, weight;
-};
 
 
 class Graph {
 public:
-  Graph() : edges_{}, adjList_{}, {};
-  Graph(string airports, string routes);
-  ~Graph();
+  Graph(string& const airports_file, string& const routes_file);
+  auto insertEdge(int src, int dest, int weight) -> void;
+  auto insertVertex(int ID, string code) -> void;
+  
+  // Getters and setters
+  auto getEdges() const -> int;
+  auto getVertices() const -> int;
+
 private:
-  map<int, Vertex*> adjList_;
+
+struct Vertex {
+  int ID;
+  string code;
+  list<Edge> adjList_;
+};
+
+struct Edge {
+  int src;
+  int dest;
+  int weight;
+};
+
+  std::unordered_map<int, Vertex> map_;
+  // Number of vertices, edges
+  int n = 0, m = 0;
 };
   
