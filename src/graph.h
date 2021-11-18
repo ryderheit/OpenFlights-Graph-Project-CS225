@@ -1,30 +1,37 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <list>
 #include <unordered_map>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <cmath>
+#include <list>
 
-using std::vector;
 using std::string;
 using std::list;
-
-
-
+using std::unordered_map;
+using std::vector;
 
 
 class Graph {
 public:
-  Graph(string& const airports_file, string& const routes_file);
+  Graph(const string& airports_file, const string& routes_file);
+
   auto insertEdge(int src, int dest, int weight) -> void;
   auto insertVertex(int ID, string code) -> void;
   
   // Getters and setters
-  auto getEdges() const -> int;
-  auto getVertices() const -> int;
+  auto getNumEdges() const -> int;
+  auto getNumVertices() const -> int;
 
 private:
+struct Edge {
+  int src;
+  int dest;
+  int weight;
+};
 
 struct Vertex {
   int ID;
@@ -32,14 +39,11 @@ struct Vertex {
   list<Edge> adjList_;
 };
 
-struct Edge {
-  int src;
-  int dest;
-  int weight;
-};
-
-  std::unordered_map<int, Vertex> map_;
+  std::unordered_map<std::string, Vertex> map_;
   // Number of vertices, edges
   int n = 0, m = 0;
+
+  auto readAirports(std::istream& airports) -> void;
+  auto readRoutes(std::istream& routes) -> void;
 };
   
