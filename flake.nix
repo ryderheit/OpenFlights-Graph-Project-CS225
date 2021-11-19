@@ -41,6 +41,7 @@
             ninja
             pkg-config
             stdenv.cc
+            gdb
           ];
         };
       }

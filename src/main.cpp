@@ -1,10 +1,10 @@
-#include "graph.h"
+#include "graph.hpp"
 
-int main() {
-  const std::string& airports_file = "/data/small_airports.dat";
-  const std::string& routes_file = "/data/small_routes.dat";
+auto main() -> int {
+  using namespace std::string_literals;
+  auto const airports_file = "data/small_airports.dat"s;
+  auto const routes_file = "data/small_routes.dat"s;
+  auto graph = Graph{airports_file, routes_file};
 
-  Graph* graph = new Graph(airports_file, routes_file);
-  delete graph;
-  return 0;
+  return 1;
 }

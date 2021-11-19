@@ -565,3 +565,12 @@ FodyWeavers.xsd
 
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
+
+### direnv ###
+.direnv
+.envrc
+
+### extraneous build files ###
+meson.build
+flake.*
+

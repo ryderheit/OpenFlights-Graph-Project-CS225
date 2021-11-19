@@ -9,7 +9,7 @@ project(
     'buildtype=debug',
     'b_ndebug=if-release',
     'warning_level=3',
-    'b_lto=true'
+    'b_lto=false'
   ]
 )
 
@@ -24,12 +24,13 @@ add_project_arguments(
   '-Wpedantic',
   '-Wshadow',
   '-Wuseless-cast',
+  '-O0',
   language: 'cpp'
 )
 
 executable(
   'template',
-  ['src/main.cpp'],
+  ['src/main.cpp', 'src/graph.cpp'],
   #dependencies: [dependency('fmt')],
   install: true
 )
