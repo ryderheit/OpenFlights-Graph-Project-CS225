@@ -57,8 +57,17 @@ auto Graph::readRoutes(std::istream& routes) -> void {
       continue;
 
     // Using the pos found add the route to the relevant ajdlist
-    airports_[pos->second].adjList.emplace_back(dst, std::rand() % 100);
-    ++numRoutes_;
+    bool duplicate = false;
+    for(auto& route: airports_[pos->second].adjList){
+      if(route.dst == dst){
+        route.weight++;
+        duplicate = true;
+      }
+    }
+    if(!duplicate){
+      airports_[pos->second].adjList.emplace_back(dst, 1);// std::rand() % 100);
+      ++numRoutes_;
+    }
   }
 }
 
