@@ -1,10 +1,11 @@
+#include <string>
+
 #include "graph.hpp"
 
 auto main() -> int {
-  using namespace std::string_literals;
-  auto const airports_file = "data/small_airports.dat"s;
-  auto const routes_file = "data/small_routes.dat"s;
-  auto graph = Graph{airports_file, routes_file};
+  auto const airports_file = std::string{"data/airports.dat"};
+  auto const routes_file = std::string{"data/routes.dat"};
+  auto const graph = Graph{airports_file, routes_file};
 
-  return 1;
+  std::printf("Airports: %ld; Routes: %ld\n", graph.numAirports(), graph.numRoutes());
 }

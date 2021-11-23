@@ -1,96 +1,93 @@
-#include "graph.hpp"
-
 #include <cstdio>
+#include <exception>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
+#include <iostream>
 
-using std::unordered_map;
+#include "graph.hpp"
+
 using std::string;
 using std::vector;
-using std::list;
 
-
-[[nodiscard]] auto stringSplit(string const& str) -> vector<string> {
-  // Open stringstream for mutation
-  auto sstream = std::stringstream{str};
-  auto tmp = string{};
+auto stringSplit(string const& str) -> vector<string> {
+  // Read string into a stream to read
+  std::stringstream sstream{str};
   auto res = vector<string>{};
 
-  // Delimit string by commas into pieces of vector
-  while (std::getline(sstream, tmp, ','))
-    res.push_back(tmp);
+  // Read each bit into the vector
+  for (auto tmp = string{}; std::getline(sstream, tmp, ','); res.push_back(tmp))
+    ;
 
-  // Return split string in vector
   return res;
 }
 
-auto Graph::insertVertex(int id, string const& iata, string const& icao) -> void {
-  // Construct vertex
-  auto const vertex = Vertex{id, iata, icao, {}};
-
-  // Add map entries for IATA/ICAO
-  map_[iata] = vertex;
-  map_[icao] = vertex;
-
-  // If empty don't add a vertex
-  if (iata != "" || icao != "")
-    ++vertexCount_;
-}
-
-auto Graph::insertEdge(string const& src, string const& dst, int weight) -> void {
-  // Emplace constructs an edge with forwarded args, adds to list at corrosponding map location
-  map_[src].adjList.emplace_front(src, dst, weight);
-  ++edgeCount_;
-}
-
 auto Graph::readAirports(std::istream& airports) -> void {
-  auto line = string{};
-
-  // Continue grabbing lines until EOF, splitting data into relevant pieces
-  while (std::getline(airports, line)) {
+  // For each line in the airports file
+  for (auto line = string{}; std::getline(airports, line);) {
+    // Split the string into the vector
     auto const row = stringSplit(line);
-    auto const id = std::stoi(row[0]);
+    // String to literal 
+    auto const id = std::stoul(row[0]);
+    // Read and strip quotes from places 4, 5 (IATA/ICAO)
     auto const iata = row[4].substr(1, row[4].size() - 2);
     auto const icao = row[5].substr(1, row[5].size() - 2);
 
-    insertVertex(id, iata, icao);
+    // Place the route vector into the airports adj list
+    airports_.emplace_back(id, iata, icao, std::vector<Route>{});
+    auto const pos = airports_.size() - 1;
+    // Insert into the map
+    name_map_.insert({iata, pos});
+    name_map_.insert({icao, pos});
   }
 }
 
 auto Graph::readRoutes(std::istream& routes) -> void {
-  string line;
+  // Read each line in the routes file
+  for (auto line = string{}; std::getline(routes, line);) {
+    // Read in the relevant bits
+    auto const row = stringSplit(line);
+    auto const& src = row[2];
+    auto const& dst = row[4];
 
-  // Continue grabbing lines until EOF, splitting data into relevant pieces
-  while (std::getline(routes, line)) {
-    std::stringstream linestream(line);
-    vector<std::string> column;
-    string cell;
+    // Find the pos of the edge beginning
+    auto const pos = name_map_.find(src);
+    if (pos == name_map_.end())
+      continue;
 
-    while (std::getline(linestream, cell, ','))
-      column.push_back(cell);
-
-    auto const& src = column[2];
-    auto const& dst = column[4];
-    insertEdge(src, dst, rand() % 100);
+    // Using the pos found add the route to the relevant ajdlist
+    airports_[pos->second].adjList.emplace_back(dst, std::rand() % 100);
+    ++numRoutes_;
   }
 }
 
-Graph::Graph(string const& airports_file, string const& routes_file) {
-  // Open streams using input filenames
-  auto airports = std::ifstream{airports_file};
-  auto routes = std::ifstream{routes_file};
+Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes_{} {
+  // Attempt to open each file and throw if failure
+  std::ifstream airports{airports_file};
+  if (!airports.is_open())
+    throw std::invalid_argument{"Unable to open airports file"};
 
-  // If failed to open
-  if (!airports.is_open() || !routes.is_open())
-    std::puts("One or more input files were not found, try again.");
+  std::ifstream routes{routes_file};
+  if (!routes.is_open())
+    throw std::invalid_argument{"Unable to open routes file"};
 
+  // Call the CSV readers
   readAirports(airports);
   readRoutes(routes);
-  // Clean map
-  map_.erase("");
 }
 
-auto Graph::edgeCount() const -> int { return edgeCount_; }
+// Getters
+auto Graph::numAirports() const noexcept -> std::size_t { return airports_.size(); }
+auto Graph::numRoutes() const noexcept -> std::size_t { return numRoutes_; }
 
-auto Graph::vertexCount() const -> int { return vertexCount_; }
+// Empty constructor, copy constructor
+Route::Route() noexcept : dst{}, weight{} {}
+Route::Route(
+  std::string dst_, std::uint32_t weight_) noexcept : dst{std::move(dst_)}, weight{weight_} {}
+
+// Empty constructor, copy constructor
+Airport::Airport() noexcept : id{}, iata{}, icao{}, adjList{} {}
+Airport::Airport(
+  std::uint32_t id_, std::string iata_, std::string icao_, std::vector<Route> adjList_) noexcept
+  : id{id_}, iata{std::move(iata_)}, icao{std::move(icao_)}, adjList{std::move(adjList_)} {}
