@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <limits>
 
 #include "graph.hpp"
 
@@ -28,8 +29,9 @@ auto Graph::readAirports(std::istream& airports) -> void {
   for (auto line = string{}; std::getline(airports, line);) {
     // Split the string into the vector
     auto const row = stringSplit(line);
-    // String to literal 
-    auto const id = std::stoul(row[0]);
+    // String to literal
+    auto const open_id = std::stoul(row[0]);
+    auto const id = numAirports_;numAirports_++;
     // Read and strip quotes from places 4, 5 (IATA/ICAO)
     auto const iata = row[4].substr(1, row[4].size() - 2);
     auto const icao = row[5].substr(1, row[5].size() - 2);
@@ -71,7 +73,7 @@ auto Graph::readRoutes(std::istream& routes) -> void {
   }
 }
 
-Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes_{} {
+Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes_{}, numAirports_{} {
   // Attempt to open each file and throw if failure
   std::ifstream airports{airports_file};
   if (!airports.is_open())
@@ -84,6 +86,43 @@ Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes
   // Call the CSV readers
   readAirports(airports);
   readRoutes(routes);
+}
+
+
+//Our Own Algorithms
+auto Graph::floydWarshall() const -> vector<vector<float>>{
+  /** Setup of the Algoithm **/
+  //set up the 2D vector of airports to infinity (represented by -1)
+  auto inf = std::numeric_limits<float>::infinity();
+  vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
+  for(auto airport: airports_){
+    //go through each airport (to fill out dist)
+    auto src_index = airport.id;
+    //set distance to itself as 0 (free to move to itself)
+    dist[src_index][src_index] = 0;
+    for(auto route: airport.adjList){
+      auto pos = name_map_.find(route.dst);
+      auto dst_index = pos->second;
+      float route_weight = 1 / float(route.weight);
+
+      std::cout << src_index << " " << dst_index << std::endl;
+      dist[src_index][dst_index] = route_weight;
+    }
+  }
+
+
+
+  /** The Meat of the Algoithm **/
+  //nested loop through all vertices 3 times
+  for(auto k = 0; k < numAirports_; k++){
+    for(auto i = 0; i < numAirports_; i++){
+      for(auto j = 0; j < numAirports_; j++){
+        if(dist[i][j] > dist[i][k] + dist[k][j]){dist[i][j] = dist[i][k] + dist[k][j];}
+      }
+    }
+  }
+
+  return dist;
 }
 
 // Getters

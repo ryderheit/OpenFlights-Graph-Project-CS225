@@ -22,6 +22,7 @@ public:
     std::uint32_t id, std::string iata, std::string icao, std::vector<Route> adjList) noexcept;
 
   std::uint32_t id;
+  std::uint32_t open_id;
   std::string iata;
   std::string icao;
   std::vector<Route> adjList;
@@ -33,6 +34,7 @@ public:
 
   auto numAirports() const noexcept -> std::size_t;
   auto numRoutes() const noexcept -> std::size_t;
+  auto floydWarshall() const -> std::vector<std::vector<float>>;
 
 private:
   auto readAirports(std::istream& airports) -> void;
@@ -42,5 +44,6 @@ private:
   std::unordered_map<std::string, std::size_t> name_map_;
 
   std::size_t numRoutes_;
+  std::size_t numAirports_;
 };
 
