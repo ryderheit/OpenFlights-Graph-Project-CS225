@@ -101,6 +101,7 @@ auto Graph::floydWarshall() const -> vector<vector<float>>{
     //set distance to itself as 0 (free to move to itself)
     dist[src_index][src_index] = 0;
     for(auto route: airport.adjList){
+      std::cout << route.dst << ": ";
       auto pos = name_map_.find(route.dst);
       auto dst_index = pos->second;
       float route_weight = 1 / float(route.weight);
