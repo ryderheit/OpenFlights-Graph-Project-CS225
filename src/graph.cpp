@@ -92,17 +92,15 @@ numAirports_{} {
   readAirports(airports);
   readRoutes(routes);
 
-
   auto inf = std::numeric_limits<float>::infinity();
-  auto dist_ = vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
+  dist_ = vector<vector<float>>(numAirports_, vector<float>(numAirports_, inf));
   //this next_ vector will be used to reconstruct paths
-  auto next_ = vector<vector<Airport>> next(numAirports_, vector<Airport>(numAirports_, Airport()));
-  next_ = next;
+  next_ = vector<vector<Airport>>(numAirports_, vector<Airport>(numAirports_, Airport()));
 }
 
 
 //Our Own Algorithms
-auto Graph::floydWarshall() -> vector<vector<float>>{
+auto Graph::floydWarshall() -> void{
   /** Setup of the Algoithm **/
   //set up the 2D vector of airports to infinity (represented by -1)
 
@@ -132,15 +130,13 @@ auto Graph::floydWarshall() -> vector<vector<float>>{
     }
     printf("%u/%lu\n", k, numAirports_);
   }
-
-  return dist_;
 }
 
 
 
 
 
-auto Graph::floydWarshallwPaths() -> vector<vector<Airport>>{
+auto Graph::floydWarshallwPaths() -> void{
   /** Setup of the Algoithm **/
   //set up the 2D vector of airports to infinity (represented by -1)
 
@@ -177,8 +173,6 @@ auto Graph::floydWarshallwPaths() -> vector<vector<Airport>>{
     }
     printf("%u/%lu\n", k, numAirports_);
   }
-
-  return next_;
 }
 
 

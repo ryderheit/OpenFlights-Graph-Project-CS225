@@ -36,8 +36,8 @@ public:
   auto numRoutes() const noexcept -> std::size_t;
 
   //Shortest Path and Helpers
-  auto floydWarshall() -> std::vector<std::vector<float>>;
-  auto floydWarshallwPaths() -> std::vector<std::vector<Airport>>;
+  auto floydWarshall() -> void;
+  auto floydWarshallwPaths() -> void;
   auto pathReconstruction(std::string src, std::string dst) -> std::vector<Airport>;
 
 private:
@@ -55,4 +55,3 @@ private:
   std::size_t numRoutes_;
   std::size_t numAirports_;
 };
-

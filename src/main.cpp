@@ -5,10 +5,10 @@
 #include "graph.hpp"
 
 auto main(int argc, char** argv) -> int {
-  using namespace std::string_literals;
+  // using namespace std::string_literals;
 
-  auto const airports_file = std::string{"data/airports.dat"s};
-  auto const routes_file = std::string{"data/routes.dat"s};
+  auto const airports_file = std::string{"data/airports.dat"};
+  auto const routes_file = std::string{"data/routes.dat"};
 
   // Cli Args for QOL
   auto routecount = 0;
@@ -22,7 +22,7 @@ auto main(int argc, char** argv) -> int {
     }
     if (!strcmp(argv[arg], "-routes")) {
       arg++;
-      int routecount = atoi(argv[arg]);
+      routecount = atoi(argv[arg]);
     }
     if (!strcmp(argv[arg], "-src")) {
       arg++;
@@ -38,8 +38,10 @@ auto main(int argc, char** argv) -> int {
 
   //auto const dists = graph.floydWarshallwPaths();
 
+  routecount = 30;
 
   if (routecount) {
+    graph.floydWarshallwPaths();
     for (auto i = 0; i < routecount; i++) {
       printf("Please input source and destination\n");
       std::string src = "", dst = "";
