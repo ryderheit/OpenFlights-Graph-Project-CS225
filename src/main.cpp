@@ -1,27 +1,58 @@
+#include <iostream>
 #include <string>
+#include <string.h>
 
 #include "graph.hpp"
 
-auto main() -> int {
-  auto const airports_file = std::string{"data/airports.dat"};
-  auto const routes_file = std::string{"data/routes.dat"};
-  printf("badtime\n");
+auto main(int argc, char** argv) -> int {
+  using namespace std::string_literals;
+
+  auto const airports_file = std::string{"data/airports.dat"s};
+  auto const routes_file = std::string{"data/routes.dat"s};
+
+  // Cli Args for QOL
+  auto routecount = 0;
+  printf("%d", argc);
+  for (int arg=1; arg<argc;arg++) {
+    if (!strcmp(argv[arg], "-h") || !strcmp(argv[arg], "--help")) {
+      printf("Usage: \n");
+      printf("[-routes | num routes to test] \n");
+      printf("[-src | source for single test] [-dst | destination for single test]\n");
+      printf("leave empty for graph construction\n");
+    }
+    if (!strcmp(argv[arg], "-routes")) {
+      arg++;
+      int routecount = atoi(argv[arg]);
+    }
+    if (!strcmp(argv[arg], "-src")) {
+      arg++;
+      std::string src = (argv[arg]);
+    }
+    if (!strcmp(argv[arg], "-dst")) {
+      arg++;
+      std::string src = (argv[arg]);
+    }
+  }
+
   auto graph = Graph{airports_file, routes_file};
 
-  printf("funtime\n");
-  auto const dists = graph.floydWarshallwPaths();
-
-  auto route1 = graph.pathReconstruction("SFO", "ABC");
-  auto route2 = graph.pathReconstruction("SFO", "ORD");
-  auto route3 = graph.pathReconstruction("KSFO", "ORD");
-  auto route4 = graph.pathReconstruction("VNO", "ROB");
-  auto route5 = graph.pathReconstruction("CMI", "SXM");
-  auto route6 = graph.pathReconstruction("GRU", "GEG");
-  auto route7 = graph.pathReconstruction("GEG", "GRU");
-  auto route8 = graph.pathReconstruction("CDG", "SZX");
-  auto route9 = graph.pathReconstruction("OAK", "PEK");
-  auto route0 = graph.pathReconstruction("HKD", "SFO");
+  //auto const dists = graph.floydWarshallwPaths();
 
 
-  std::printf("Airports: %ld; Routes: %ld\n", graph.numAirports(), graph.numRoutes());
+  if (routecount) {
+    for (auto i = 0; i < routecount; i++) {
+      printf("Please input source and destination\n");
+      std::string src = "", dst = "";
+      printf("src: ");
+      std::cin >> src;
+      printf("\ndst: ");
+      std::cin >> dst;
+      printf("\n");
+      graph.pathReconstruction(src, dst);
+    }
+  }
+
+      
+
+  printf("Airports: %ld; Routes: %ld\n", graph.numAirports(), graph.numRoutes());
 }

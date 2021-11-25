@@ -94,10 +94,9 @@ numAirports_{} {
 
 
   auto inf = std::numeric_limits<float>::infinity();
-  vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
-  dist_ = dist;
+  auto dist_ = vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
   //this next_ vector will be used to reconstruct paths
-  vector<vector<Airport>> next(numAirports_, vector<Airport>(numAirports_, Airport()));
+  auto next_ = vector<vector<Airport>> next(numAirports_, vector<Airport>(numAirports_, Airport()));
   next_ = next;
 }
 
