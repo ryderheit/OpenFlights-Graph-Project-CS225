@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include <limits>
+#include<algorithm>
+#include<iterator>
 
 #include "graph.hpp"
 
@@ -73,7 +75,10 @@ auto Graph::readRoutes(std::istream& routes) -> void {
   }
 }
 
-Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes_{}, numAirports_{} {
+Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes_{},
+numAirports_{} {
+
+
   // Attempt to open each file and throw if failure
   std::ifstream airports{airports_file};
   if (!airports.is_open())
@@ -86,31 +91,36 @@ Graph::Graph(string const& airports_file, string const& routes_file) : numRoutes
   // Call the CSV readers
   readAirports(airports);
   readRoutes(routes);
+
+
+  auto inf = std::numeric_limits<float>::infinity();
+  vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
+  dist_ = dist;
+  //this next_ vector will be used to reconstruct paths
+  vector<vector<Airport>> next(numAirports_, vector<Airport>(numAirports_, Airport()));
+  next_ = next;
 }
 
 
 //Our Own Algorithms
-auto Graph::floydWarshall() const -> vector<vector<float>>{
+auto Graph::floydWarshall() -> vector<vector<float>>{
   /** Setup of the Algoithm **/
   //set up the 2D vector of airports to infinity (represented by -1)
-  auto inf = std::numeric_limits<float>::infinity();
-  vector<vector<float>> dist(numAirports_, vector<float>(numAirports_, inf));
+
   for(auto airport: airports_){
-    //go through each airport (to fill out dist)
+    //go through each airport (to fill out dist_)
     auto src_index = airport.id;
-    //set distance to itself as 0 (free to move to itself)
-    dist[src_index][src_index] = 0;
-    for(auto route: airport.adjList){
-      std::cout << route.dst << ": ";
+    //set dist_ance to itself as 0 (free to move to itself)
+    dist_[src_index][src_index] = 0;
+    for(auto& route: airport.adjList){
       auto pos = name_map_.find(route.dst);
+      if(pos == name_map_.end()){continue;}
       auto dst_index = pos->second;
       float route_weight = 1 / float(route.weight);
 
-      std::cout << src_index << " " << dst_index << std::endl;
-      dist[src_index][dst_index] = route_weight;
+      dist_[src_index][dst_index] = route_weight;
     }
   }
-
 
 
   /** The Meat of the Algoithm **/
@@ -118,13 +128,112 @@ auto Graph::floydWarshall() const -> vector<vector<float>>{
   for(auto k = 0; k < numAirports_; k++){
     for(auto i = 0; i < numAirports_; i++){
       for(auto j = 0; j < numAirports_; j++){
-        if(dist[i][j] > dist[i][k] + dist[k][j]){dist[i][j] = dist[i][k] + dist[k][j];}
+        if(dist_[i][j] > dist_[i][k] + dist_[k][j]){dist_[i][j] = dist_[i][k] + dist_[k][j];}
       }
+    }
+    printf("%u/%lu\n", k, numAirports_);
+  }
+
+  return dist_;
+}
+
+
+
+
+
+auto Graph::floydWarshallwPaths() -> vector<vector<Airport>>{
+  /** Setup of the Algoithm **/
+  //set up the 2D vector of airports to infinity (represented by -1)
+
+  //this next_ vector will be used to reconstruct paths
+
+  for(auto airport: airports_){
+    //go through each airport (to fill out dist_)
+    auto src_index = airport.id;
+    //set dist_ance to itself as 0 (free to move to itself)
+    dist_[src_index][src_index] = 0;
+    next_[src_index][src_index] = airport;
+    for(auto& route: airport.adjList){
+      auto pos = name_map_.find(route.dst);
+      if(pos == name_map_.end()){continue;}
+      auto dst_index = pos->second;
+      float route_weight = 1 / float(route.weight);
+
+      dist_[src_index][dst_index] = route_weight;
+      next_[src_index][dst_index] = airports_[dst_index];
     }
   }
 
-  return dist;
+
+  /** The Meat of the Algoithm **/
+  //nested loop through all vertices 3 times
+  for(auto k = 0; k < numAirports_; k++){
+    for(auto i = 0; i < numAirports_; i++){
+      for(auto j = 0; j < numAirports_; j++){
+        if(dist_[i][j] > dist_[i][k] + dist_[k][j]){
+          dist_[i][j] = dist_[i][k] + dist_[k][j];
+          next_[i][j] = next_[i][k];
+        }
+      }
+    }
+    printf("%u/%lu\n", k, numAirports_);
+  }
+
+  return next_;
 }
+
+
+
+auto Graph::pathHelper(std::string src, std::string dst) -> vector<Airport>{
+  vector<Airport> path;
+
+  if(name_map_.find(src) == name_map_.end()){
+    printf("Invalid Source Airport Code\n");
+    return path;
+  }
+
+  if(name_map_.find(dst) == name_map_.end()){
+    printf("Invalid Destination Airport Code\n");
+    return path;
+  }
+
+  auto src_id = name_map_.find(src)->second;
+  auto dst_id = name_map_.find(dst)->second;
+
+
+  Airport null_airport;
+
+  path.push_back(airports_[src_id]);
+
+
+  while(src_id != dst_id){
+    src_id = next_[src_id][dst_id].id;
+    path.push_back(airports_[src_id]);
+  }
+
+  return path;
+}
+
+
+
+auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airport>{
+  std::cout << "src: " << src << "  dst: " << dst << std::endl;
+
+  vector<Airport> path = pathHelper(src, dst);
+
+  for(auto airport = path.begin(); airport < path.end(); airport++){
+    if(airport == path.begin()){
+      std::cout << airport->iata;
+    } else {
+      std::cout << "->" << airport->iata;
+    }
+  }
+  std::cout << std::endl;
+  std::cout << std::endl;
+  return path;
+}
+
+
 
 // Getters
 auto Graph::numAirports() const noexcept -> std::size_t { return airports_.size(); }

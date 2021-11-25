@@ -34,14 +34,23 @@ public:
 
   auto numAirports() const noexcept -> std::size_t;
   auto numRoutes() const noexcept -> std::size_t;
-  auto floydWarshall() const -> std::vector<std::vector<float>>;
+
+  //Shortest Path and Helpers
+  auto floydWarshall() -> std::vector<std::vector<float>>;
+  auto floydWarshallwPaths() -> std::vector<std::vector<Airport>>;
+  auto pathReconstruction(std::string src, std::string dst) -> std::vector<Airport>;
 
 private:
   auto readAirports(std::istream& airports) -> void;
   auto readRoutes(std::istream& routes) -> void;
 
+  auto pathHelper(std::string src, std::string dst) -> std::vector<Airport>;
+
   std::vector<Airport> airports_;
   std::unordered_map<std::string, std::size_t> name_map_;
+
+  std::vector<std::vector<float>> dist_;
+  std::vector<std::vector<Airport>> next_;
 
   std::size_t numRoutes_;
   std::size_t numAirports_;
