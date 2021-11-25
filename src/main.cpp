@@ -7,11 +7,12 @@
 auto main(int argc, char** argv) -> int {
   // using namespace std::string_literals;
 
-  auto const airports_file = std::string{"data/airports.dat"};
-  auto const routes_file = std::string{"data/routes.dat"};
+  auto const airports_file = std::string{"data/small_airports.dat"};
+  auto const routes_file = std::string{"data/small_routes.dat"};
 
   // Cli Args for QOL
-  auto routecount = 0;
+  auto routecount = 1;
+  std::string src = "", dst = "";
   //printf("%d", argc);
   for (int arg=1; arg<argc;arg++) {
     if (!strcmp(argv[arg], "-h") || !strcmp(argv[arg], "--help")) {
@@ -22,15 +23,15 @@ auto main(int argc, char** argv) -> int {
     }
     if (!strcmp(argv[arg], "-routes")) {
       arg++;
-      routecount = atoi(argv[arg]);
+      routecount += atoi(argv[arg]);
     }
     if (!strcmp(argv[arg], "-src")) {
       arg++;
-      std::string src = (argv[arg]);
+      src = (argv[arg]);
     }
     if (!strcmp(argv[arg], "-dst")) {
       arg++;
-      std::string src = (argv[arg]);
+      dst = (argv[arg]);
     }
   }
 
@@ -38,11 +39,14 @@ auto main(int argc, char** argv) -> int {
 
   //auto const dists = graph.floydWarshallwPaths();
 
-  routecount = 5;
+  //routecount = 5;
 
   if (routecount) {
     graph.floydWarshallwPaths();
-    for (auto i = 0; i < routecount; i++) {
+    if(!src.empty() && !dst.empty()){
+      graph.pathReconstruction(src, dst);
+    }
+    for (auto i = 1; i < routecount; i++) {
       printf("Please input source and destination\n");
       std::string src = "", dst = "";
       printf("src: ");

@@ -133,6 +133,8 @@ auto Graph::floydWarshall() -> void{
     std::cout << "\r";
     std::cout << k << "/" << numAirports_ << std::flush;
   }
+  printf("\r%lu/%lu",numAirports_, numAirports_);
+  printf("\n\n");
 }
 
 
@@ -178,6 +180,8 @@ auto Graph::floydWarshallwPaths() -> void{
     std::cout << "\r";
     std::cout << k << "/" << numAirports_ << std::flush;
   }
+  printf("\r%lu/%lu",numAirports_, numAirports_);
+  printf("\n\n");
 }
 
 
