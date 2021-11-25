@@ -95,7 +95,7 @@ numAirports_{} {
   auto inf = std::numeric_limits<float>::infinity();
   dist_ = vector<vector<float>>(numAirports_, vector<float>(numAirports_, inf));
   //this next_ vector will be used to reconstruct paths
-  next_ = vector<vector<Airport>>(numAirports_, vector<Airport>(numAirports_, Airport()));
+  next_ = vector<vector<std::uint32_t>>(numAirports_, vector<std::uint32_t>(numAirports_, -1));
 }
 
 
@@ -119,6 +119,7 @@ auto Graph::floydWarshall() -> void{
     }
   }
 
+    printf("Floyd Warshall's Progress:\n");
 
   /** The Meat of the Algoithm **/
   //nested loop through all vertices 3 times
@@ -128,7 +129,9 @@ auto Graph::floydWarshall() -> void{
         if(dist_[i][j] > dist_[i][k] + dist_[k][j]){dist_[i][j] = dist_[i][k] + dist_[k][j];}
       }
     }
-    printf("%u/%lu\n", k, numAirports_);
+
+    std::cout << "\r";
+    std::cout << k << "/" << numAirports_ << std::flush;
   }
 }
 
@@ -147,7 +150,7 @@ auto Graph::floydWarshallwPaths() -> void{
     auto src_index = airport.id;
     //set dist_ance to itself as 0 (free to move to itself)
     dist_[src_index][src_index] = 0;
-    next_[src_index][src_index] = airport;
+    next_[src_index][src_index] = airport.id;
     for(auto& route: airport.adjList){
       auto pos = name_map_.find(route.dst);
       if(pos == name_map_.end()){continue;}
@@ -155,10 +158,11 @@ auto Graph::floydWarshallwPaths() -> void{
       float route_weight = 1 / float(route.weight);
 
       dist_[src_index][dst_index] = route_weight;
-      next_[src_index][dst_index] = airports_[dst_index];
+      next_[src_index][dst_index] = dst_index;
     }
   }
 
+  printf("Floyd Warshall's Progress:\n");
 
   /** The Meat of the Algoithm **/
   //nested loop through all vertices 3 times
@@ -171,7 +175,8 @@ auto Graph::floydWarshallwPaths() -> void{
         }
       }
     }
-    printf("%u/%lu\n", k, numAirports_);
+    std::cout << "\r";
+    std::cout << k << "/" << numAirports_ << std::flush;
   }
 }
 
@@ -185,26 +190,27 @@ auto Graph::pathHelper(std::string src, std::string dst) -> vector<Airport>{
     return path;
   }
 
-  if(name_map_.find(dst) == name_map_.end()){
+  else if(name_map_.find(dst) == name_map_.end()){
     printf("Invalid Destination Airport Code\n");
     return path;
   }
-
-  auto src_id = name_map_.find(src)->second;
-  auto dst_id = name_map_.find(dst)->second;
-
-
-  Airport null_airport;
-
-  path.push_back(airports_[src_id]);
+  else {
+    auto src_id = name_map_.find(src)->second;
+    auto dst_id = name_map_.find(dst)->second;
 
 
-  while(src_id != dst_id){
-    src_id = next_[src_id][dst_id].id;
+    Airport null_airport;
+
     path.push_back(airports_[src_id]);
-  }
 
-  return path;
+
+    while(src_id != dst_id){
+      src_id = next_[src_id][dst_id];
+      path.push_back(airports_[src_id]);
+    }
+
+    return path;
+  }
 }
 
 

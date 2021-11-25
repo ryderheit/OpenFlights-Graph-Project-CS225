@@ -12,7 +12,7 @@ auto main(int argc, char** argv) -> int {
 
   // Cli Args for QOL
   auto routecount = 0;
-  printf("%d", argc);
+  //printf("%d", argc);
   for (int arg=1; arg<argc;arg++) {
     if (!strcmp(argv[arg], "-h") || !strcmp(argv[arg], "--help")) {
       printf("Usage: \n");
@@ -38,7 +38,7 @@ auto main(int argc, char** argv) -> int {
 
   //auto const dists = graph.floydWarshallwPaths();
 
-  routecount = 30;
+  routecount = 5;
 
   if (routecount) {
     graph.floydWarshallwPaths();

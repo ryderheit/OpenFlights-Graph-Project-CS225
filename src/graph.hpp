@@ -50,7 +50,7 @@ private:
   std::unordered_map<std::string, std::size_t> name_map_;
 
   std::vector<std::vector<float>> dist_;
-  std::vector<std::vector<Airport>> next_;
+  std::vector<std::vector<std::uint32_t>> next_;
 
   std::size_t numRoutes_;
   std::size_t numAirports_;
