@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <iterator>
 #include <queue>
+#include <cmath>
+
 
 #include "graph.hpp"
 
@@ -29,6 +31,29 @@ auto stringSplit(string const& str) -> vector<string> {
   return res;
 }
 
+auto toRad(double& deg) -> double{
+  double one_deg = (M_PI)/180;
+  return one_deg * deg;
+}
+
+auto getDist(Airport src, Airport dst) -> double{
+  auto lat1 = toRad(src.lat);
+  auto lon1 = toRad(src.lon);
+  auto lat2 = toRad(dst.lat);
+  auto lon2 = toRad(dst.lon);
+
+  auto dlat = lat2 - lat1;
+  auto dlon = lon2 - lon1;
+
+  auto ans = pow(sin(dlat / 2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlon / 2), 2);
+  ans = 2 * asin(sqrt(ans));
+
+  double R = 6371;
+  ans = ans * R;
+
+  return ans;
+}
+
 auto Graph::readAirports(std::istream& airports) -> void {
   // For each line in the airports file
   for (auto line = string{}; std::getline(airports, line);) {
@@ -40,6 +65,8 @@ auto Graph::readAirports(std::istream& airports) -> void {
     // Read and strip quotes from places 4, 5 (IATA/ICAO)
     auto const iata = row[4].substr(1, row[4].size() - 2);
     auto const icao = row[5].substr(1, row[5].size() - 2);
+    auto const lat = std::stof(row[6]);
+    auto const lon = std::stof(row[7]);
 
     // Place the route vector into the airports adj list
     airports_.emplace_back(open_id, id, iata, icao, std::vector<Route>{});
@@ -69,13 +96,13 @@ auto Graph::readRoutes(std::istream& routes) -> void {
     bool duplicate = false;
     for(auto& route: airports_[pos->second].adjList){ // loop through each route from the src airport
       if(route.dst == dst){ // multiple edges
-        route.weight++;
+        route.routes++;
         duplicate = true;
       }
     }
     if(!duplicate){
       auto & list = airports_[pos->second].adjList;
-      list.emplace_back(src_open_id, dest_open_id, dst, 1);// std::rand() % 100);
+      list.emplace_back(src_open_id, dest_open_id, dst, 0, 1);// std::rand() % 100);
       edge_list_[src_open_id] = list;
       ++numRoutes_;
     }
@@ -146,9 +173,7 @@ auto Graph::floydWarshall() -> void{
 
 
 
-
-
-auto Graph::floydWarshallwPaths() -> void{
+auto Graph::floydWarshallwDistPaths() -> void{
   /** Setup of the Algoithm **/
   //set up the 2D vector of airports to infinity (represented by -1)
 
@@ -164,7 +189,51 @@ auto Graph::floydWarshallwPaths() -> void{
       auto pos = name_map_.find(route.dst);
       if(pos == name_map_.end()){continue;}
       auto dst_index = pos->second;
-      float route_weight = 1 / float(route.weight);
+      float route_weight = float(route.weight);
+
+      dist_[src_index][dst_index] = route_weight;
+      next_[src_index][dst_index] = dst_index;
+    }
+  }
+
+  printf("Floyd Warshall's Progress:\n");
+
+  /** The Meat of the Algoithm **/
+  //nested loop through all vertices 3 times
+  for(auto k = 0; k < numAirports_; k++){
+    for(auto i = 0; i < numAirports_; i++){
+      for(auto j = 0; j < numAirports_; j++){
+        if(dist_[i][j] > dist_[i][k] + dist_[k][j]){
+          dist_[i][j] = dist_[i][k] + dist_[k][j];
+          next_[i][j] = next_[i][k];
+        }
+      }
+    }
+    std::cout << "\r";
+    std::cout << k << "/" << numAirports_ << std::flush;
+  }
+  printf("\r%lu/%lu",numAirports_, numAirports_);
+  printf("\n\n");
+}
+
+
+auto Graph::floydWarshallwRoutePaths() -> void{
+  /** Setup of the Algoithm **/
+  //set up the 2D vector of airports to infinity (represented by -1)
+
+  //this next_ vector will be used to reconstruct paths
+
+  for(auto airport: airports_){
+    //go through each airport (to fill out dist_)
+    auto src_index = airport.id;
+    //set dist_ance to itself as 0 (free to move to itself)
+    dist_[src_index][src_index] = 0;
+    next_[src_index][src_index] = airport.id;
+    for(auto& route: airport.adjList){
+      auto pos = name_map_.find(route.dst);
+      if(pos == name_map_.end()){continue;}
+      auto dst_index = pos->second;
+      float route_weight = 1 / float(route.routes);
 
       dist_[src_index][dst_index] = route_weight;
       next_[src_index][dst_index] = dst_index;
@@ -319,12 +388,17 @@ Route::Route(
   string src_open_id_,
   string dest_open_id_,
   string dst_,
-  std::uint32_t weight_
+  std::uint32_t weight_,
+  std::uint32_t routes_,
 ) noexcept : 
-  src_open_id{src_open_id_}, dest_open_id{dest_open_id_}, dst{std::move(dst_)}, weight{weight_} {}
+  src_open_id{src_open_id_},
+  dest_open_id{dest_open_id_},
+  dst{std::move(dst_)},
+  weight{weight_},
+  routes{routes_} {}
 
 // Empty constructor, copy constructor
-Airport::Airport() noexcept : open_id{}, id{}, iata{}, icao{}, adjList{} {}
+Airport::Airport() noexcept : open_id{}, id{}, iata{}, icao{}, adjList{}, lat{}, lon{} {}
 Airport::Airport(
   std::string open_id_,
   std::uint32_t id_,

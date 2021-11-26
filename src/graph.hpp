@@ -9,13 +9,18 @@ class Route { // Edge
 public:
   Route() noexcept;
   Route(
-    std::string src_open_id_, std::string dest_open_id_, std::string dst_, std::uint32_t weight_
-    ) noexcept;
+    std::string src_open_id_,
+    std::string dest_open_id_,
+    std::string dst_,
+    std::uint32_t weight_,
+    std::uint32_t routes_
+  ) noexcept;
 
   std::string src_open_id;
   std::string dest_open_id;
   std::string dst;
   std::uint32_t weight;
+  std::uint32_t routes;
 };
 
 struct Airport { // Node
@@ -33,6 +38,8 @@ public:
   std::string open_id;
   std::string iata;
   std::string icao;
+  double lon;
+  double lat;
   std::vector<Route> adjList;
 };
 
@@ -45,7 +52,8 @@ public:
 
   //Shortest Path and Helpers
   auto floydWarshall() -> void;
-  auto floydWarshallwPaths() -> void;
+  auto floydWarshallwDistPaths() -> void;
+  auto floydWarshallwRoutePaths() -> void;
   auto pathReconstruction(std::string src, std::string dst) -> std::vector<Airport>;
 
   // BFS algorithm
@@ -54,6 +62,9 @@ public:
 private:
   auto readAirports(std::istream& airports) -> void;
   auto readRoutes(std::istream& routes) -> void;
+
+  auto toRad(double& deg) -> double;
+  auto getDist(Airport src, Airport dst) -> double;
 
   auto pathHelper(std::string src, std::string dst) -> std::vector<Airport>;
 

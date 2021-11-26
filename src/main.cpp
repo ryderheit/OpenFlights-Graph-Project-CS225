@@ -43,7 +43,7 @@ auto main(int argc, char** argv) -> int {
   //routecount = 5;
 
   if (routecount) {
-    graph.floydWarshallwPaths();
+    graph.floydWarshallwRoutePaths();
     if(!src.empty() && !dst.empty()){
       graph.pathReconstruction(src, dst);
     }
