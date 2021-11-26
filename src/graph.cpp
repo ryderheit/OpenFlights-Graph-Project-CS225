@@ -389,7 +389,7 @@ Route::Route(
   string dest_open_id_,
   string dst_,
   std::uint32_t weight_,
-  std::uint32_t routes_,
+  std::uint32_t routes_
 ) noexcept : 
   src_open_id{src_open_id_},
   dest_open_id{dest_open_id_},
