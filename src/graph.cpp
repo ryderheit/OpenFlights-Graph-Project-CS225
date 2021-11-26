@@ -84,13 +84,25 @@ auto Graph::readRoutes(std::istream& routes) -> void {
     auto const row = stringSplit(line);
     auto const& src = row[2]; // IATA or ICAO
     auto const& dst = row[4]; // IATA or ICAO
-    auto const& dest_open_id = row[5]; // openflights ID
-    auto const& src_open_id = row[3]; // openflights ID
+
+
+    unsigned src_pos = UINT_MAX; // our own ID of src
+    unsigned dest_pos = UINT_MAX; // our own ID of dest
 
     // Find the pos of the edge beginning
     auto const pos = name_map_.find(src);
     if (pos == name_map_.end()) // src not in name_map_
       continue;
+    else {
+      src_pos = pos->second;
+    }
+
+    auto const pos2 = name_map_.find(dst);
+    if (pos2 == name_map_.end()) // src not in name_map_
+      continue;
+    else {
+      dest_pos = pos2->second;
+    }
 
     // Using the pos found, add the route to the relevant adjList
     bool duplicate = false;
@@ -101,9 +113,7 @@ auto Graph::readRoutes(std::istream& routes) -> void {
       }
     }
     if(!duplicate){
-      auto & list = airports_[pos->second].adjList;
-      list.emplace_back(src_open_id, dest_open_id, dst, 0, 1);// std::rand() % 100);
-      edge_list_[src_open_id] = list;
+      airports_[pos->second].adjList.emplace_back(src_pos, dest_pos, dst, 0, 1);// std::rand() % 100);
       ++numRoutes_;
     }
   }
@@ -297,20 +307,20 @@ auto Graph::BFS() -> void {
   std::cout << "Starting BFS" << std::endl;
   std::cout << std::endl;
 
-  unordered_map<string,bool> exploredNodes; // openflights IDs -> whether explored
-  unordered_map<string,int> edgeStates; // Route -> state of route
+  unordered_map<unsigned,bool> exploredNodes; // our own airport IDs -> whether explored
+  unordered_map<string,int> edgeStates; // "{src_pos},{dest_pos}" -> state of route
 
   for (auto & airport : airports_) {
-    exploredNodes[airport.open_id] = false; // Mark each node (airport) as unexplored
+    exploredNodes[airport.id] = false; // Mark each node (airport) as unexplored
     for (Route & route : airport.adjList) {
-      auto const & src_dest = route.src_open_id + "," + route.dest_open_id;
+      auto const & src_dest = std::to_string(route.src_pos) + "," + std::to_string(route.dest_pos);
       edgeStates[src_dest] = 0; // Give each edge (route) a state of 0 (unexplored)
     }
   }
 
   for (auto const & airport : airports_) {
-    if (!exploredNodes[airport.open_id]) {
-      BFSHelper(airport.open_id, exploredNodes, edgeStates);
+    if (!exploredNodes[airport.id]) {
+      BFSHelper(airport.id, exploredNodes, edgeStates);
     }
   }
 
@@ -335,23 +345,28 @@ auto Graph::BFS() -> void {
   std::cout << std::endl;
 }
 
-auto Graph::BFSHelper(const string open_id, unordered_map<string,bool>& exploredNodes,
+/**
+ * @param index the index of the airport in airports_
+ * @param exploredNodes map of id -> whether the node has been explored
+ * @param edgeStates map of edge as string -> state of the edge
+ */
+auto Graph::BFSHelper(const unsigned index, unordered_map<unsigned,bool>& exploredNodes,
       unordered_map<string,int>& edgeStates) -> void {
-  queue<string> q; // queue of openflights IDs
-  exploredNodes[open_id] = true;
-  q.push(open_id);
+  queue<unsigned> q; // queue of our own IDs
+  exploredNodes[index] = true;
+  q.push(index);
 
   while (!q.empty()) {
-    string & front_id = q.front();
+    unsigned & front_idx = q.front();
     q.pop();
-    for (Route & route : edge_list_[front_id]) {
-      const string & src_id = route.src_open_id;
-      const string & dest_id = route.dest_open_id;
-      const string & src_dest = src_id + "," + dest_id;
-      if (!exploredNodes[dest_id]) { // destination is not explored
-        exploredNodes[dest_id] = true;
+
+    const Airport & airport = airports_[front_idx];
+    for (const Route & route : airport.adjList) {
+      const string & src_dest = std::to_string(route.src_pos) + "," + std::to_string(route.dest_pos);
+      if (!exploredNodes[route.dest_pos]) { // destination is not explored
+        exploredNodes[route.dest_pos] = true;
         edgeStates[src_dest] = 1; // mark as discovery edge
-        q.push(dest_id);
+        q.push(route.dest_pos);
       } else if (!edgeStates[src_dest]) { // destination is explored but edge is not
         edgeStates[src_dest] = 2; // mark as cross edge
       }
@@ -383,16 +398,16 @@ auto Graph::numAirports() const noexcept -> std::size_t { return airports_.size(
 auto Graph::numRoutes() const noexcept -> std::size_t { return numRoutes_; }
 
 // Empty constructor, copy constructor
-Route::Route() noexcept : src_open_id{}, dest_open_id{}, dst{}, weight{} {}
+Route::Route() noexcept : dst{}, weight{} {}
 Route::Route(
-  string src_open_id_,
-  string dest_open_id_,
+  unsigned src_pos_,
+  unsigned dest_pos_,
   string dst_,
   std::uint32_t weight_,
   std::uint32_t routes_
 ) noexcept : 
-  src_open_id{src_open_id_},
-  dest_open_id{dest_open_id_},
+  src_pos{src_pos_},
+  dest_pos{dest_pos_},
   dst{std::move(dst_)},
   weight{weight_},
   routes{routes_} {}

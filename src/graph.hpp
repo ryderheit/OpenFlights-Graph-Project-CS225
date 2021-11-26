@@ -4,20 +4,21 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <climits>
 
 class Route { // Edge
 public:
   Route() noexcept;
   Route(
-    std::string src_open_id_,
-    std::string dest_open_id_,
+    unsigned src_pos_,
+    unsigned dest_pos_,
     std::string dst_,
     std::uint32_t weight_,
     std::uint32_t routes_
   ) noexcept;
 
-  std::string src_open_id;
-  std::string dest_open_id;
+  unsigned src_pos = UINT_MAX; // position of src in airports_
+  unsigned dest_pos = UINT_MAX; // position of dest in airports_
   std::string dst;
   std::uint32_t weight;
   std::uint32_t routes;
@@ -34,7 +35,7 @@ public:
     std::vector<Route> adjList_
   ) noexcept;
 
-  std::uint32_t id;
+  std::uint32_t id; // our own ID, used in name_map_
   std::string open_id;
   std::string iata;
   std::string icao;
@@ -68,12 +69,11 @@ private:
 
   auto pathHelper(std::string src, std::string dst) -> std::vector<Airport>;
 
-  auto BFSHelper(const std::string open_id, std::unordered_map<std::string,bool>& exploredNodes,
+  auto BFSHelper(const unsigned index, std::unordered_map<unsigned,bool>& exploredNodes,
       std::unordered_map<std::string,int>& edgeStates) -> void;
 
   std::vector<Airport> airports_;
   std::unordered_map<std::string, std::size_t> name_map_;
-  std::unordered_map<std::string, std::vector<Route>> edge_list_; // src openflights id -> routes
 
   std::vector<std::vector<float>> dist_;
   std::vector<std::vector<std::uint32_t>> next_;
