@@ -182,7 +182,7 @@ auto Graph::floydWarshallwDistPaths() -> void{
       auto pos = name_map_.find(route.dst);
       if(pos == name_map_.end()){continue;}
       auto dst_index = pos->second;
-      float route_weight = 1 / float(route.routes);
+      float route_weight = float(route.weight);
 
       dist_[src_index][dst_index] = route_weight;
       next_[src_index][dst_index] = dst_index;
