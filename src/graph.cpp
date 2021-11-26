@@ -6,13 +6,16 @@
 #include <vector>
 #include <iostream>
 #include <limits>
-#include<algorithm>
-#include<iterator>
+#include <algorithm>
+#include <iterator>
+#include <queue>
 
 #include "graph.hpp"
 
 using std::string;
 using std::vector;
+using std::unordered_map;
+using std::queue;
 
 auto stringSplit(string const& str) -> vector<string> {
   // Read string into a stream to read
@@ -32,14 +35,14 @@ auto Graph::readAirports(std::istream& airports) -> void {
     // Split the string into the vector
     auto const row = stringSplit(line);
     // String to literal
-    auto const open_id = std::stoul(row[0]);
+    auto const open_id = row[0];
     auto const id = numAirports_;numAirports_++;
     // Read and strip quotes from places 4, 5 (IATA/ICAO)
     auto const iata = row[4].substr(1, row[4].size() - 2);
     auto const icao = row[5].substr(1, row[5].size() - 2);
 
     // Place the route vector into the airports adj list
-    airports_.emplace_back(id, iata, icao, std::vector<Route>{});
+    airports_.emplace_back(open_id, id, iata, icao, std::vector<Route>{});
     auto const pos = airports_.size() - 1;
     // Insert into the map
     name_map_.insert({iata, pos});
@@ -52,24 +55,28 @@ auto Graph::readRoutes(std::istream& routes) -> void {
   for (auto line = string{}; std::getline(routes, line);) {
     // Read in the relevant bits
     auto const row = stringSplit(line);
-    auto const& src = row[2];
-    auto const& dst = row[4];
+    auto const& src = row[2]; // IATA or ICAO
+    auto const& dst = row[4]; // IATA or ICAO
+    auto const& dest_open_id = row[5]; // openflights ID
+    auto const& src_open_id = row[3]; // openflights ID
 
     // Find the pos of the edge beginning
     auto const pos = name_map_.find(src);
-    if (pos == name_map_.end())
+    if (pos == name_map_.end()) // src not in name_map_
       continue;
 
-    // Using the pos found add the route to the relevant ajdlist
+    // Using the pos found, add the route to the relevant adjList
     bool duplicate = false;
-    for(auto& route: airports_[pos->second].adjList){
-      if(route.dst == dst){
+    for(auto& route: airports_[pos->second].adjList){ // loop through each route from the src airport
+      if(route.dst == dst){ // multiple edges
         route.weight++;
         duplicate = true;
       }
     }
     if(!duplicate){
-      airports_[pos->second].adjList.emplace_back(dst, 1);// std::rand() % 100);
+      auto & list = airports_[pos->second].adjList;
+      list.emplace_back(src_open_id, dest_open_id, dst, 1);// std::rand() % 100);
+      edge_list_[src_open_id] = list;
       ++numRoutes_;
     }
   }
@@ -217,7 +224,71 @@ auto Graph::pathHelper(std::string src, std::string dst) -> vector<Airport>{
   }
 }
 
+auto Graph::BFS() -> void {
+  std::cout << "Starting BFS" << std::endl;
+  std::cout << std::endl;
 
+  unordered_map<string,bool> exploredNodes; // openflights IDs -> whether explored
+  unordered_map<string,int> edgeStates; // Route -> state of route
+
+  for (auto & airport : airports_) {
+    exploredNodes[airport.open_id] = false; // Mark each node (airport) as unexplored
+    for (Route & route : airport.adjList) {
+      auto const & src_dest = route.src_open_id + "," + route.dest_open_id;
+      edgeStates[src_dest] = 0; // Give each edge (route) a state of 0 (unexplored)
+    }
+  }
+
+  for (auto const & airport : airports_) {
+    if (!exploredNodes[airport.open_id]) {
+      BFSHelper(airport.open_id, exploredNodes, edgeStates);
+    }
+  }
+
+  uint32_t undiscovered = 0;
+  uint32_t discovery = 0;
+  uint32_t cross = 0;
+
+  std::cout << "Total distinct routes in file: " << numRoutes_ << std::endl;
+  for (auto it = edgeStates.begin(); it != edgeStates.end(); ++it) {
+    if (it->second == 0) {
+      undiscovered++;
+    } else if (it->second == 1) {
+      discovery++;
+    } else if (it->second == 2) {
+      cross++;
+    }
+  }
+  std::cout << "Unexplored edges: " << undiscovered << std::endl;
+  std::cout << "Discovery edges: " << discovery << std::endl;
+  std::cout << "Cross edges: " << cross << std::endl;
+  std::cout << "Total distinct routes found in BFS: " << undiscovered + discovery + cross << std::endl;
+  std::cout << std::endl;
+}
+
+auto Graph::BFSHelper(const string open_id, unordered_map<string,bool>& exploredNodes,
+      unordered_map<string,int>& edgeStates) -> void {
+  queue<string> q; // queue of openflights IDs
+  exploredNodes[open_id] = true;
+  q.push(open_id);
+
+  while (!q.empty()) {
+    string & front_id = q.front();
+    q.pop();
+    for (Route & route : edge_list_[front_id]) {
+      const string & src_id = route.src_open_id;
+      const string & dest_id = route.dest_open_id;
+      const string & src_dest = src_id + "," + dest_id;
+      if (!exploredNodes[dest_id]) { // destination is not explored
+        exploredNodes[dest_id] = true;
+        edgeStates[src_dest] = 1; // mark as discovery edge
+        q.push(dest_id);
+      } else if (!edgeStates[src_dest]) { // destination is explored but edge is not
+        edgeStates[src_dest] = 2; // mark as cross edge
+      }
+    }
+  }
+}
 
 auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airport>{
   std::cout << "src: " << src << "  dst: " << dst << std::endl;
@@ -243,12 +314,26 @@ auto Graph::numAirports() const noexcept -> std::size_t { return airports_.size(
 auto Graph::numRoutes() const noexcept -> std::size_t { return numRoutes_; }
 
 // Empty constructor, copy constructor
-Route::Route() noexcept : dst{}, weight{} {}
+Route::Route() noexcept : src_open_id{}, dest_open_id{}, dst{}, weight{} {}
 Route::Route(
-  std::string dst_, std::uint32_t weight_) noexcept : dst{std::move(dst_)}, weight{weight_} {}
+  string src_open_id_,
+  string dest_open_id_,
+  string dst_,
+  std::uint32_t weight_
+) noexcept : 
+  src_open_id{src_open_id_}, dest_open_id{dest_open_id_}, dst{std::move(dst_)}, weight{weight_} {}
 
 // Empty constructor, copy constructor
-Airport::Airport() noexcept : id{}, iata{}, icao{}, adjList{} {}
+Airport::Airport() noexcept : open_id{}, id{}, iata{}, icao{}, adjList{} {}
 Airport::Airport(
-  std::uint32_t id_, std::string iata_, std::string icao_, std::vector<Route> adjList_) noexcept
-  : id{id_}, iata{std::move(iata_)}, icao{std::move(icao_)}, adjList{std::move(adjList_)} {}
+  std::string open_id_,
+  std::uint32_t id_,
+  std::string iata_,
+  std::string icao_,
+  std::vector<Route> adjList_
+) noexcept
+  : open_id{open_id_},
+    id{id_},
+    iata{std::move(iata_)},
+    icao{std::move(icao_)},
+    adjList{std::move(adjList_)} {}

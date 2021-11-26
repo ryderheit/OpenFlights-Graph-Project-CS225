@@ -36,6 +36,7 @@ auto main(int argc, char** argv) -> int {
   }
 
   auto graph = Graph{airports_file, routes_file};
+  graph.BFS();
 
   //auto const dists = graph.floydWarshallwPaths();
 
