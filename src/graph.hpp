@@ -8,11 +8,12 @@
 class Route {
 public:
   Route() noexcept;
-  Route(std::string dst, std::uint32_t weight) noexcept;
+  Route(std::string dst, std::uint32_t weight, std::uint32_t routes) noexcept;
 
   // TODO: OpenFlights ID
   std::string dst;
   std::uint32_t weight;
+  std::uint32_t routes;
 };
 
 struct Airport {
@@ -25,6 +26,8 @@ public:
   std::uint32_t open_id;
   std::string iata;
   std::string icao;
+  double lon;
+  double lat;
   std::vector<Route> adjList;
 };
 
@@ -37,12 +40,16 @@ public:
 
   //Shortest Path and Helpers
   auto floydWarshall() -> void;
-  auto floydWarshallwPaths() -> void;
+  auto floydWarshallwDistPaths() -> void;
+  auto floydWarshallwRoutePaths() -> void;
   auto pathReconstruction(std::string src, std::string dst) -> std::vector<Airport>;
 
 private:
   auto readAirports(std::istream& airports) -> void;
   auto readRoutes(std::istream& routes) -> void;
+
+  auto toRad(double& deg) -> double;
+  auto getDist(Airport src, Airport dst) -> double;
 
   auto pathHelper(std::string src, std::string dst) -> std::vector<Airport>;
 
