@@ -62,8 +62,8 @@ auto Graph::readAirports(std::istream& airports) -> void {
     // Read and strip quotes from places 4, 5 (IATA/ICAO)
     auto const iata = row[4].substr(1, row[4].size() - 2);
     auto const icao = row[5].substr(1, row[5].size() - 2);
-    auto const lat = 5;
-    auto const lon = 6;
+    auto const lat = std::stof(row[6]);
+    auto const lon = std::stof(row[7]);
 
     // Place the route vector into the airports adj list
     airports_.emplace_back(id, iata, icao, std::vector<Route>{});
