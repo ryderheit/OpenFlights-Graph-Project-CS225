@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 
 #include "graph.hpp"
 
@@ -21,6 +22,7 @@ void Graph::generateCentrality() {
     }
     //Make room for all airports right away
     btwn_.resize(airports_.size(), 0);
+    printf("Centrality Progress:\n");
     //For each airport
     for (std::size_t i = 0; i < btwn_.size(); ++i) {
         //For each starting airporty
@@ -38,7 +40,7 @@ void Graph::generateCentrality() {
                 Route r;
                 float str = 0;
                 for (std::size_t s = 0; s < p.size() - 1; ++s) {
-                    //Find the route (will always exist in a valid path)
+                    //Find the route (should always exist in a valid path)
                     p[s].to(p[s+1].id, r);
                     //If we pass through airport i note that
                     if (!passthrough && (p[s].id == i || p[s+1].id == i)) passthrough = true;
@@ -48,7 +50,11 @@ void Graph::generateCentrality() {
                 if (passthrough) btwn_[i] += str;
             }
         }
+        std::cout << "\r";
+        std::cout << i << "/" << numAirports_ << std::flush;
     }
+
+    printf("\r%lu/%lu\n\n", numAirports_, numAirports_);
 
     //Normalize. There are many ways to do this; another is to 
     //just divide by max to get centrality 'as a percent of'

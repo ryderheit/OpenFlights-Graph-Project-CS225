@@ -16,6 +16,7 @@ auto main(int argc, char** argv) -> int {
   std::string src = "", dst = "";
   std::string distf = "", pathf = "";
   bool read = false;
+  bool cent = false;
   //printf("%d", argc);
   for (int arg=1; arg<argc;arg++) {
     if (!strcmp(argv[arg], "-h") || !strcmp(argv[arg], "--help")) {
@@ -23,8 +24,10 @@ auto main(int argc, char** argv) -> int {
       printf("[-routes | num routes to test]\n");
       printf("[-read | dist filename | next filename] [-write | dist filename | next filename]\n");
       printf("[-src | source for single test] [-dst | destination for single test]\n");
-      printf("[-l]: use large dataset\n");
-      printf("leave empty for graph construction\n");
+      printf("[-l]: use large dataset.\n");
+      printf("[-c]: calculate centrality.\n");
+      printf("Leave empty for graph construction.\n");
+      return 0;
     }
     if (!strcmp(argv[arg], "-routes")) {
       arg++;
@@ -54,6 +57,9 @@ auto main(int argc, char** argv) -> int {
       distf = argv[arg];
       arg++;
       pathf = argv[arg];
+    }
+    if (!strcmp(argv[arg], "-c")) {
+      cent = true;
     }
   }
   auto const airports_file = std::string{afile};
@@ -97,8 +103,10 @@ auto main(int argc, char** argv) -> int {
 
   printf("Airports: %ld; Routes: %ld\n", graph.numAirports(), graph.numRoutes());
 
-  graph.generateCentrality();
-  auto minmax = graph.minmax();
-  printf("The most central airport is %s\n", minmax.second.c_str());
-  printf("The least central airport is %s\n", minmax.first.c_str());
+  if (cent) {
+    graph.generateCentrality();
+    auto minmax = graph.minmax();
+    printf("The most central airport is %s\n", minmax.second.c_str());
+    printf("The least central airport is %s\n", minmax.first.c_str());
+  }
 }

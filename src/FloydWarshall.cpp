@@ -203,10 +203,14 @@ void Graph::writeFW(const string & dist, const string & next) const {
 
 void Graph::readFW(const string & dist, const string & next) {
   std::ifstream file{dist};
+  if (!file.is_open()) {
+    printf("Bad File\n\n");
+    return;
+  }
   string line;
   std::size_t i = 0, j = 0;
+  printf("Dist Progress:\n");
   while (getline(file, line)) {
-    vector<float> l;
     auto v = stringSplit(line);
     for (string s : v) {
       if (s.size()) {
@@ -215,14 +219,16 @@ void Graph::readFW(const string & dist, const string & next) {
       ++j;
     }
     j = 0;
+    std::cout << "\r";
+    std::cout << i << "/" << numAirports_ << std::flush;
     ++i;
   }
   file.close();
   file.open(next);
   i = j = 0;
+  printf("\r%lu/%lu\n\nNext Progress:\n", numAirports_, numAirports_);
   while (getline(file, line)) {
     if (!line.size()) break;
-    vector<float> l;
     auto v = stringSplit(line);
     for (string s : v) {
       if (s.size()) {
@@ -231,6 +237,9 @@ void Graph::readFW(const string & dist, const string & next) {
       ++j;
     }
     j = 0;
+    std::cout << "\r";
+    std::cout << i << "/" << numAirports_ << std::flush;
     ++i;
   }
+    printf("\r%lu/%lu\n\n", numAirports_, numAirports_);
 }
