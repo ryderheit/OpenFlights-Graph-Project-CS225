@@ -82,7 +82,7 @@ private:
   auto toRad(const float deg) const-> float;
   auto getDist(const Airport & src, const Airport & dst) const -> float;
 
-  auto pathHelper(std::string & src, std::string & dst) -> std::vector<Airport>;
+  auto pathHelper(std::string & src, std::string & dst) -> std::vector<std::size_t>;
 
   auto BFSHelper(const unsigned index, std::unordered_map<unsigned,bool>& exploredNodes,
       std::unordered_map<std::string,int>& edgeStates) -> void;

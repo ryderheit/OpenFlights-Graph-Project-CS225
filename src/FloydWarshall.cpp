@@ -130,48 +130,53 @@ auto Graph::floydWarshallwRoutePaths() -> void{
 
 
 
-auto Graph::pathHelper(std::string & src, std::string & dst) -> vector<Airport>{
-  vector<Airport> path;
-
-  if(name_map_.find(src) == name_map_.end()){
-    printf("Invalid Source Airport Code\n");
-    return path;
+auto Graph::pathHelper(std::string & src, std::string & dst) -> vector<std::size_t>{
+  if (next_[name_map_[src]][name_map_[dst]] == -1) {
+    return {};
   }
 
-  else if(name_map_.find(dst) == name_map_.end()){
-    printf("Invalid Destination Airport Code\n");
-    return path;
+  vector<std::size_t> path;
+  auto src_id = name_map_.find(src)->second;
+  auto dst_id = name_map_.find(dst)->second;
+
+
+  Airport null_airport;
+
+  path.push_back(src_id);
+
+
+  while(src_id != dst_id){
+    src_id = next_[src_id][dst_id];
+    path.push_back(src_id);
   }
-  else {
-    auto src_id = name_map_.find(src)->second;
-    auto dst_id = name_map_.find(dst)->second;
 
-
-    Airport null_airport;
-
-    path.push_back(airports_[src_id]);
-
-
-    while(src_id != dst_id){
-      src_id = next_[src_id][dst_id];
-      path.push_back(airports_[src_id]);
-    }
-
-    return path;
-  }
+  return path;
 }
 
 auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airport>{
   std::cout << "src: " << src << "  dst: " << dst << std::endl;
+  
+  if(name_map_.find(src) == name_map_.end()){
+    printf("Invalid Source Airport Code\n");
+    return {};
+  }
 
-  vector<Airport> path = pathHelper(src, dst);
+  else if(name_map_.find(dst) == name_map_.end()){
+    printf("Invalid Destination Airport Code\n");
+    return {};
+  }
 
-  for(auto airport = path.begin(); airport < path.end(); airport++){
-    if(airport == path.begin()){
-      std::cout << airport->iata;
+  vector<std::size_t> tmp = pathHelper(src, dst);
+  vector<Airport> path;
+
+  for(std::size_t i : tmp){
+    const Airport & airport = airports_[i];
+    if(path.size() == 0) {
+      std::cout << airport.iata;
     } else {
-      std::cout << "->" << airport->iata;
+      std::cout << "->" << airport.iata;
     }
+    path.push_back(airport);
   }
   std::cout << std::endl;
   std::cout << std::endl;

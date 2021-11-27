@@ -23,38 +23,32 @@ void Graph::generateCentrality() {
     //Make room for all airports right away
     btwn_.resize(airports_.size(), 0);
     printf("Centrality Progress:\n");
-    //For each airport
-    for (std::size_t i = 0; i < btwn_.size(); ++i) {
-        //For each starting airporty
-        for (std::size_t j = 0; j < btwn_.size(); ++j) {
-            //For each destination airport
-            for (std::size_t k = 0; k < btwn_.size(); ++k) {
-                //Do not count diagonals
-                if (j == k) continue;
-                //Get the path
-                auto p = pathHelper(airports_[j].iata, airports_[k].iata);
-                //If it has >= 2 airports then its a real path
-                if (p.size() < 2) continue;
-                //We only add the strength of the path if we pass through the node; this keeps track
-                bool passthrough = (j == i || k == i);
-                Route r;
-                float str = 0;
-                for (std::size_t s = 0; s < p.size() - 1; ++s) {
-                    //Find the route (should always exist in a valid path)
-                    p[s].to(p[s+1].id, r);
-                    //If we pass through airport i note that
-                    if (!passthrough && (p[s].id == i || p[s+1].id == i)) passthrough = true;
-                    str += r.weight * r.routes;
-                }
-                //if we passed through add the strength of the path
-                if (passthrough) btwn_[i] += str;
+    //For each route
+    for (std::size_t i = 0; i < numAirports_; ++i) {
+        for (std::size_t j = 0; j < numAirports_; ++j) {
+            auto v = pathHelper(airports_[i].iata, airports_[j].iata);
+            //Skip routes with no edges
+            if (v.size() < 2) continue;
+            double str = 0;
+            Route r;
+            //Calculate the strength of the route
+            for (std::size_t s = 0; s < v.size() - 1; ++s) {
+                const Airport & cur = airports_[v[s]];
+                const Airport & nxt = airports_[v[s+1]];
+                //As it stands, this is probably the bottleneck
+                cur.to(nxt.id, r);
+                str += r.weight * r.routes;
             }
+            //Add that to the centrality of each airport
+            for (std::size_t s : v) {
+                btwn_[s] += str;
+            }
+            std::cout << "\r";
+            std::cout << i << "," << j << std::flush;
         }
-        std::cout << "\r";
-        std::cout << i << "/" << numAirports_ << std::flush;
     }
 
-    printf("\r%lu/%lu\n\n", numAirports_, numAirports_);
+    printf("\r%lu,%lu\n\n", numAirports_, numAirports_);
 
     //Normalize. There are many ways to do this; another is to 
     //just divide by max to get centrality 'as a percent of'
