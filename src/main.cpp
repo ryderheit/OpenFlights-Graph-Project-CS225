@@ -96,10 +96,12 @@ auto main(int argc, char** argv) -> int {
   if (!region.empty()) {
     graph = Graph(airports_file, routes_file, region, false, airline);
     printf("Looking for Airports in %s\n", region.c_str());
+    if (!airline.empty()) printf("Looking for routes flown by %s\n", airline.c_str());
   }
   else if (!country.empty()) {
     graph = Graph(airports_file, routes_file, country, true, airline);
     printf("Looking for Airports in %s\n", country.c_str());
+    if (!airline.empty()) printf("Looking for routes flown by %s\n", airline.c_str());
   }
   else {
     graph = Graph(airports_file, routes_file, airline);
