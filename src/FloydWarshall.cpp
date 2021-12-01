@@ -44,8 +44,6 @@ auto Graph::floydWarshall() -> void{
   printf("\n\n");
 }
 
-
-
 auto Graph::floydWarshallwDistPaths() -> void{
   /** Setup of the Algoithm **/
   //set up the 2D vector of airports to infinity (represented by -1)
@@ -85,7 +83,6 @@ auto Graph::floydWarshallwDistPaths() -> void{
   printf("\r%lu/%lu",numAirports_, numAirports_);
   printf("\n\n");
 }
-
 
 auto Graph::floydWarshallwRoutePaths() -> void{
   /** Setup of the Algoithm **/
@@ -128,8 +125,6 @@ auto Graph::floydWarshallwRoutePaths() -> void{
   printf("\n\n");
 }
 
-
-
 auto Graph::pathHelper(std::string & src, std::string & dst) -> vector<std::size_t>{
   if (next_[name_map_[src]][name_map_[dst]] == -1) {
     return {};
@@ -167,6 +162,10 @@ auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airpo
   }
 
   vector<std::size_t> tmp = pathHelper(src, dst);
+  if (tmp.size() == 0) {
+    printf("No route exists\n");
+    return {};
+  }
   vector<Airport> path;
 
   for(std::size_t i : tmp){

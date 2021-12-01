@@ -1,12 +1,37 @@
 #include <queue>
 #include <iostream>
 #include <unordered_map>
+#include <cmath>
 
 #include "graph.hpp"
 
 using std::queue;
 using std::unordered_map;
 using std::string;
+
+auto Graph::toRad(const float deg) const-> float{
+  float one_deg = (M_PI)/180;
+  return one_deg * deg;
+}
+
+auto Graph::getDist(const Airport & src, const Airport & dst) const -> float {
+  auto lat1 = toRad(src.lat);
+  auto lon1 = toRad(src.lon);
+  auto lat2 = toRad(dst.lat);
+  auto lon2 = toRad(dst.lon);
+
+  auto dlat = lat2 - lat1;
+  auto dlon = lon2 - lon1;
+
+  auto ans = pow(sin(dlat / 2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlon / 2), 2);
+  ans = 2 * acos(1 - 2 * ans);
+
+  // float R = 6371;
+  // ans = ans * R;
+
+  return ans;
+}
+
 
 auto Graph::BFS() -> void {
   std::cout << "Starting BFS" << std::endl;

@@ -47,12 +47,19 @@ public:
 
   //Sets r to the edge in this airport which goes to dst. Slow.
   void to(const std::size_t dst, Route & r) const;
+
+  std::string name() const;
 };
 
 class Graph {
 public:
-  Graph(std::string const& airports_file, std::string const& routes_file);
-
+  Graph();
+  Graph(std::string const& airports_file, std::string const& routes_file, std::string airline = "");
+  //construct graph either by airport region (case 0) or country (case 1),
+  //and airline. Empty string means no filtering
+  Graph(std::string airports_file, std::string routes_file,
+        std::string region, bool country, std::string airline = "");
+  
   auto numAirports() const noexcept -> std::size_t;
   auto numRoutes() const noexcept -> std::size_t;
 
@@ -69,15 +76,22 @@ public:
 
   //Betweeness
   //Creates btwn_. Run after FloydWarshall!!
-  void generateCentrality();
+  void generateCentrality(std::size_t minSize = 0);
   //Returns the minimally and maximally central airports in a pair
   std::pair<std::string, std::string> minmax() const;
   //Returns the centrality of a given airport
   float centrality(const std::string & src) const;
+  //Prints out info about the airport
+  void query(std::string q) const;
+  //Prints airports with no routes
+  void printIsolated() const;
 
 private:
   auto readAirports(std::istream& airports) -> void;
+  void readAirportsbyRegion(std::istream & airports, std::string filter);
+  void readAirportsbyCountry(std::istream & airports, std::string filter);
   auto readRoutes(std::istream& routes) -> void;
+  void readRoutes(std::istream & routes, std::string filter);
 
   auto toRad(const float deg) const-> float;
   auto getDist(const Airport & src, const Airport & dst) const -> float;

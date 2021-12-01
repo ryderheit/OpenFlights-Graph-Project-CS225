@@ -14,7 +14,7 @@ void Airport::to(const std::size_t dst, Route & r) const {
     }
 }
 
-void Graph::generateCentrality() {
+void Graph::generateCentrality(std::size_t minSize) {
     //Run FW first!
     if (next_.size() != airports_.size()) {
         printf("Please run Floyd-Warshall first!\n");
@@ -25,7 +25,9 @@ void Graph::generateCentrality() {
     printf("Centrality Progress:\n");
     //For each route
     for (std::size_t i = 0; i < numAirports_; ++i) {
+        if (airports_[i].adjList.size() < minSize) continue;
         for (std::size_t j = 0; j < numAirports_; ++j) {
+            if (airports_[j].adjList.size() < minSize) continue;
             auto v = pathHelper(airports_[i].iata, airports_[j].iata);
             //Skip routes with no edges
             if (v.size() < 2) continue;
@@ -37,7 +39,7 @@ void Graph::generateCentrality() {
                 const Airport & nxt = airports_[v[s+1]];
                 //As it stands, this is probably the bottleneck
                 cur.to(nxt.id, r);
-                str += r.weight * r.routes;
+                str += r.routes * r.weight;
             }
             //Add that to the centrality of each airport
             for (std::size_t s : v) {
@@ -70,11 +72,12 @@ std::pair<std::string, std::string> Graph::minmax() const {
             max = i;
         }
         if (btwn_[i] < curmin) {
+            if (airports_[i].adjList.size() == 0) continue;
             curmin = btwn_[i];
             min = i;
         }
     }
-    return { airports_[min].iata, airports_[max].iata };
+    return { airports_[min].name(), airports_[max].name() };
 }
 
 float Graph::centrality(const std::string & src) const {
@@ -82,4 +85,9 @@ float Graph::centrality(const std::string & src) const {
     auto it = name_map_.find(src);
     if (it == name_map_.end()) return std::numeric_limits<float>::quiet_NaN();
     return btwn_[it->second];
+}
+
+std::string Airport::name() const {
+    if (iata.empty()) return icao;
+    return iata;
 }
