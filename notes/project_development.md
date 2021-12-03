@@ -18,3 +18,14 @@ as we continue with the project development. On problem we ran into was we would
 Warshall's Algorithm because we were storing over 59 million airports (around 7,700 squard for the 2D vector), but we 
 switched to just hold the indexes of the airport is our airports_ vector. Next week, we hope to improve those two
 algorithms and build the betweennes centrality algorithm.
+
+
+### Week of December 3rd:
+This week was another important one in the development of our project, as it felt like the beginning of the end
+of our project. This week we had 2 major developments, Betweeness Centrality and Better Command Line Arguments.
+The construction of the Betweeness Centrality means that we have built all three of our major algorithms, and
+optimizations and cleaning up the code, we are technically done. We are planning to parrelellize our Floyd
+Warshall's Algorithm to severely speed it up as a bit of extra flair to our project. The other thing we
+developed this week was we added more Command Line Arguments that allow us to filter our graph to only 
+include airports from a certain country, or region, and more. We need next week to flesh out our testing suite
+and to improve commenting in the next week of work.
