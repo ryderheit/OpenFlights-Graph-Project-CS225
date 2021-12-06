@@ -1,0 +1,5 @@
+11,"North Airport","North","United States","NOR","NORT",60,0
+12,"East Airport","East","United States","EAS","EAST",0,100
+13,"South Airport","South","United States","SOU","SOUT",-200,0
+14,"Weast Airport","Weast","United States","WEA","WEAS",0,-30
+15,"Central Airport","Central","United States","CEN","CENT",0,0
