@@ -4,10 +4,10 @@ TEST = test
 BUILD_DIR ?= build
 SRC_DIRS ?= src
 
-EXE_OBJ = $(BUILD_DIR)/$(SRC_DIRS)/main.cpp.o
+EXE_OBJ = $(BUILD_DIR)/$(SRC_DIRS)/main.o
 
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
-OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+OBJS := $(patsubst %.cpp, %.o, $(addprefix $(BUILD_DIR)/, $(SRCS)))
 DEPS := $(OBJS:.o=.d)
 
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
@@ -22,7 +22,7 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 
 
 # c++ source
-$(BUILD_DIR)/%.cpp.o: %.cpp
+$(BUILD_DIR)/%.o: %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
