@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <iterator>
+#include <limits>
 
 
 #include "graph.hpp"
