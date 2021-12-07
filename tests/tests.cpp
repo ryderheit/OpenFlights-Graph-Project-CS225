@@ -19,8 +19,8 @@ TEST_CASE("test dummy airport", "[weight=5]") {
 }
 
 TEST_CASE("test path invalid airport", "[weight = 5]"){
-    auto const airport = "../data/small_airports.dat";
-    auto const routes = "../data/small_routes.dat";
+    auto const airport = "data/small_airports.dat";
+    auto const routes = "data/small_routes.dat";
     Graph g = Graph(airport, routes);
 
     g.floydWarshallwDistPaths();
@@ -33,8 +33,8 @@ TEST_CASE("test path invalid airport", "[weight = 5]"){
 }
 
 TEST_CASE("test path valid airport", "[weight = 5]"){
-    auto const airport = "../data/small_airports.dat";
-    auto const routes = "../data/small_routes.dat";
+    auto const airport = "data/small_airports.dat";
+    auto const routes = "data/small_routes.dat";
     Graph g = Graph(airport, routes);
 
     g.floydWarshallwDistPaths();
