@@ -37,6 +37,7 @@ auto Graph::floydWarshall() -> void{
       }
     }
 
+    //print out the progress of the algorithm, flushing it out after each loop
     std::cout << "\r";
     std::cout << k << "/" << numAirports_ << std::flush;
   }
@@ -77,6 +78,7 @@ auto Graph::floydWarshallwDistPaths() -> void{
         }
       }
     }
+    //print out the progress of the algorithm, flushing it out after each loop
     std::cout << "\r";
     std::cout << k << "/" << numAirports_ << std::flush;
   }
@@ -118,6 +120,7 @@ auto Graph::floydWarshallwRoutePaths() -> void{
         }
       }
     }
+    //print out the progress of the algorithm, flushing it out after each loop
     std::cout << "\r";
     std::cout << k << "/" << numAirports_ << std::flush;
   }
@@ -126,21 +129,26 @@ auto Graph::floydWarshallwRoutePaths() -> void{
 }
 
 auto Graph::pathHelper(std::string & src, std::string & dst) -> vector<std::size_t>{
+  //use the "next" 2D vector to rebuild the shortest path
   if (next_[name_map_[src]][name_map_[dst]] == -1) {
     return {};
   }
 
   vector<std::size_t> path;
+
+  //get the int ids of the airports from the strings that were passed into the function
   auto src_id = name_map_.find(src)->second;
   auto dst_id = name_map_.find(dst)->second;
 
 
   Airport null_airport;
 
+  //push back the starting id into the path vector
   path.push_back(src_id);
 
 
   while(src_id != dst_id){
+    //push back each next id into the path vector
     src_id = next_[src_id][dst_id];
     path.push_back(src_id);
   }
@@ -149,8 +157,11 @@ auto Graph::pathHelper(std::string & src, std::string & dst) -> vector<std::size
 }
 
 auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airport>{
+  //this basically prints out the shortest path and returns it as a vector
   std::cout << "src: " << src << "  dst: " << dst << std::endl;
-  
+
+  //check the the source and destination are valid
+  //print out errors if they are not
   if(name_map_.find(src) == name_map_.end()){
     printf("Invalid Source Airport Code\n");
     return {};
@@ -168,6 +179,7 @@ auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airpo
   }
   vector<Airport> path;
 
+  //print out and push airports into the path
   for(std::size_t i : tmp){
     const Airport & airport = airports_[i];
     if(path.size() == 0) {
@@ -179,6 +191,7 @@ auto Graph::pathReconstruction(std::string src, std::string dst) -> vector<Airpo
   }
   std::cout << std::endl;
   std::cout << std::endl;
+  //return the shortest path as a vector
   return path;
 }
 

@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "../catch/catch.hpp"
 #include "graph.hpp"
 
@@ -14,4 +16,29 @@ TEST_CASE("test dummy airport", "[weight=5]") {
     auto const routes = "tests/dummy_routes_trivial.txt";
     Graph g = Graph(airports, routes);
     g.BFS();
+}
+
+TEST_CASE("test path invalid airport", "[weight = 5]"){
+    auto const airport = "../data/small_airports.dat";
+    auto const routes = "../data/small_routes.dat";
+    Graph g = Graph(airport, routes);
+
+    g.floydWarshallwDistPaths();
+
+    std::vector<Airport> path = g.pathReconstruction("SFO", "ABC");
+
+
+    REQUIRE(path.size() == 0);
+
+}
+
+TEST_CASE("test path valid airport", "[weight = 5]"){
+    auto const airport = "../data/small_airports.dat";
+    auto const routes = "../data/small_routes.dat";
+    Graph g = Graph(airport, routes);
+
+    g.floydWarshallwDistPaths();
+
+    auto path = g.pathReconstruction("SFO", "ORD");
+
 }
