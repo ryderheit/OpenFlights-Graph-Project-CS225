@@ -42,7 +42,7 @@ output_msg: ; $(CLANG_VERSION_MSG)
 .PHONY: clean
 
 clean:
-	$(RM) -r $(BUILD_DIR)
+	$(RM) -r $(BUILD_DIR) tests/tests.o
 
 -include $(DEPS)
 
