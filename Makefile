@@ -13,7 +13,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -march=native -g -std=c++17 -O2
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -march=native -g -std=c++14 -O2
 CXX = clang++
 LD = clang++
 
@@ -23,7 +23,7 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 
 # c++ source
 $(BUILD_DIR)/%.o: %.cpp
-	$(MKDIR_P) $(dir $@)
+	@$(MKDIR_P) $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 # Rules for compiling test suite.
@@ -42,7 +42,7 @@ output_msg: ; $(CLANG_VERSION_MSG)
 .PHONY: clean
 
 clean:
-	$(RM) -r $(BUILD_DIR) tests/tests.o
+	$(RM) -r $(BUILD_DIR) tests/tests.o test
 
 -include $(DEPS)
 
