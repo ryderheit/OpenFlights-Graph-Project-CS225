@@ -75,6 +75,8 @@ TEST_CASE("test path invalid airport", "[weight = 5]"){
 
     REQUIRE(path.size() == 0);
 
+    printf("\n\n\n");
+
 }
 
 TEST_CASE("test path valid airport", "[weight = 5]"){
@@ -82,8 +84,13 @@ TEST_CASE("test path valid airport", "[weight = 5]"){
     auto const routes = "data/small_routes.dat";
     Graph g = Graph(airport, routes);
 
-    g.floydWarshallwDistPaths();
+    g.floydWarshallwRoutePaths();
 
-    auto path = g.pathReconstruction("SFO", "ORD");
+    auto pathORD = g.pathReconstruction("SFO", "ORD");
+    auto pathJFK = g.pathReconstruction("SFO", "JFK");
+
+    REQUIRE(pathORD.size() ==  3);
+    REQUIRE(pathJFK.size() == 2);
+    REQUIRE(pathORD[1].iata == "ATL");
 
 }
