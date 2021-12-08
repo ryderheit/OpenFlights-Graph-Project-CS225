@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "../catch/catch.hpp"
-#include "graph.hpp"
+#include "../src/graph.hpp"
 
 using std::string;
 using std::cout;
