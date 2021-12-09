@@ -24,8 +24,7 @@ algorithms and build the betweennes centrality algorithm.
 This week was another important one in the development of our project, as it felt like the beginning of the end
 of our project. This week we had 2 major developments, Betweeness Centrality and Better Command Line Arguments.
 The construction of the Betweeness Centrality means that we have built all three of our major algorithms, and
-optimizations and cleaning up the code, we are technically done. We are planning to parrelellize our Floyd
-Warshall's Algorithm to severely speed it up as a bit of extra flair to our project. The other thing we
+optimizations and cleaning up the code, we are technically done. The other thing we
 developed this week was we added more Command Line Arguments that allow us to filter our graph to only 
 include airports from a certain country, or region, and more. We need next week to flesh out our testing suite
 and to improve commenting in the next week of work.
