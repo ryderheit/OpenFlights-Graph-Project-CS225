@@ -28,3 +28,12 @@ optimizations and cleaning up the code, we are technically done. The other thing
 developed this week was we added more Command Line Arguments that allow us to filter our graph to only 
 include airports from a certain country, or region, and more. We need next week to flesh out our testing suite
 and to improve commenting in the next week of work.
+
+### Week of December 10th:
+This was the last full week of our project. After our mid week check-in went extraordinarily well, we had little
+work left. The first of our two major work chunks was to fix up a testing suite. This included a lot of effort
+to get the catch tests compiling and working, including reworking our make file, but once we got it working,
+it gave us a very nice testing suite to work with and build up. The next thing we had to do was to write our 
+report and add our finishing touches to the project. We added all the necessary and important bug fixes and
+fancification of our user interface and we wrote up the results report. We have begun working on the presentation
+and that is the final piece of this fun final project puzzle.
