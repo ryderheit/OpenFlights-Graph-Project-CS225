@@ -29,8 +29,8 @@ void Graph::generateCentrality(std::size_t minSize) {
         for (std::size_t j = 0; j < numAirports_; ++j) {
             if (airports_[j].adjList.size() < minSize) continue;
             auto v = pathHelper(airports_[i].iata, airports_[j].iata);
-            //Skip routes with no edges
-            if (v.size() < 2) continue;
+            //Skip routes with no middle
+            if (v.size() < 3) continue;
             double str = 0;
             Route r;
             //Calculate the strength of the route
@@ -42,8 +42,8 @@ void Graph::generateCentrality(std::size_t minSize) {
                 str += r.routes * r.weight;
             }
             //Add that to the centrality of each airport
-            for (std::size_t s : v) {
-                btwn_[s] += str;
+            for (std::size_t i = 1; i < v.size() - 1; ++i) {
+                btwn_[v[i]] += str;
             }
             std::cout << "\r";
             std::cout << i << "," << j << std::flush;
