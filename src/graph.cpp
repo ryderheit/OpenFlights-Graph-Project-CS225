@@ -121,8 +121,8 @@ auto Graph::readRoutes(std::istream& routes) -> void {
 
     // Using the pos found, add the route to the relevant adjList
     bool duplicate = false;
-    for(auto& route: airports_[pos->second].adjList){ // loop through each route from the src airport
-      if(route.dst == dst){ // multiple edges
+    for(auto& route: airports_[src_pos].adjList){ // loop through each route from the src airport
+      if(route.dest_pos == dest_pos){ // multiple edges
         route.routes++;
         duplicate = true;
       }
