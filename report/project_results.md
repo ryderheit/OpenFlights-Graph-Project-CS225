@@ -1,9 +1,9 @@
 # Final Project Results
 
 When we set out to work on this project, we had the main goal to gain insight into the
-operation of flight networks. We used 2 algorithms for this, Floyd-Warshall's Algorithm and
+operation of flight networks. We used 2 algorithms for this: Floyd-Warshall's Algorithm and
 Betweenness Centrality. Floyd Warshall's Algorithm told us the shortest route between any
-two airports, and Betweenness Centrality gave us an interesting insigeht into the importance
+two airports, and Betweenness Centrality gave us an interesting insight into the importance
 of airports. This is the output when you run our code:
 
 ### Full dataset BFS
