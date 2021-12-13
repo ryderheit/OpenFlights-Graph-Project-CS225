@@ -1,11 +1,10 @@
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 
 #include "graph.hpp"
 
 void Airport::to(const std::size_t dst, Route & r) const {
-    //This is slow. We could have each route track its index
-    //in its node to do this in constant time
     for (const Route & rt : adjList) {
         if (rt.dest_pos == dst) {
             r = rt;
@@ -37,7 +36,6 @@ void Graph::generateCentrality(std::size_t minSize) {
             for (std::size_t s = 0; s < v.size() - 1; ++s) {
                 const Airport & cur = airports_[v[s]];
                 const Airport & nxt = airports_[v[s+1]];
-                //As it stands, this is probably the bottleneck
                 cur.to(nxt.id, r);
                 str += r.routes * r.weight;
             }
@@ -90,4 +88,29 @@ float Graph::centrality(const std::string & src) const {
 std::string Airport::name() const {
     if (iata.empty()) return icao;
     return iata;
+}
+
+void Graph::writeBC(const std::string & filename) const {
+    std::ofstream file{filename};
+    for (auto i : btwn_) {
+        std::string s = std::to_string(i);
+        file.write(s.c_str(), s.size());
+        file.put(',');
+    }
+    file.close();
+}
+
+void Graph::readBC(const std::string & filename) {
+    std::ifstream file{filename};
+    if (!file.is_open()) {
+        std::cerr << "Bad Filename!" << std::endl;
+        return;
+    }
+    std::string line;
+    getline(file, line);
+    auto v = stringSplit(line);
+    btwn_.resize(v.size() - 1);
+    for (std::size_t i = 0; i < v.size() - 1; ++i) {
+        btwn_[i] = std::stof(v[i]);
+    }
 }

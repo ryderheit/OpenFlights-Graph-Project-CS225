@@ -85,6 +85,9 @@ public:
   void query(std::string q) const;
   //Prints airports with no routes
   void printIsolated() const;
+  //Read and write centrality
+  void writeBC(const std::string & filename) const;
+  void readBC(const std::string & filename);
 
 private:
   auto readAirports(std::istream& airports) -> void;

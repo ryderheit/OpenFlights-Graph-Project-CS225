@@ -221,6 +221,10 @@ void Graph::writeFW(const string & dist, const string & next) const {
 void Graph::readFW(const string & dist, const string & next) {
   std::ifstream file{dist};
   if (!file.is_open()) {
+    std::cerr << "Bad filename!" << std::endl;
+    return;
+  }
+  if (!file.is_open()) {
     printf("Bad File\n\n");
     return;
   }
@@ -242,6 +246,10 @@ void Graph::readFW(const string & dist, const string & next) {
   }
   file.close();
   file.open(next);
+  if (!file.is_open()) {
+    std::cerr << "Bad filename!" << std::endl;
+    return;
+  }
   i = j = 0;
   printf("\r%lu/%lu\n\nNext Progress:\n", numAirports_, numAirports_);
   while (getline(file, line)) {

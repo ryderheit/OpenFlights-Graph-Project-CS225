@@ -7,48 +7,41 @@
 auto main(int argc, char** argv) -> int {
   // using namespace std::string_literals;
 
-  std::string afile = "data/small_airports.dat";
-  std::string rfile = "data/small_routes.dat";
+  std::string afile = "data/airports.dat";
+  std::string rfile = "data/routes.dat";
 
 
   // Cli Args for QOL
-  auto routecount = 0;
   int centSize = -1;
-  std::string src = "", dst = "";
   std::string distf = "", pathf = "";
   std::string region = "", country = "";
   std::string airline = "";
+  std::string centf = "";
   bool read = false;
+  bool readc = false;
   bool query = false;
+  bool routes = false;
   //printf("%d", argc);
   for (int arg=1; arg<argc;arg++) {
     if (!strcmp(argv[arg], "-h") || !strcmp(argv[arg], "--help")) {
-      printf("Usage: \n");
-      printf("[-routes | num routes to test]\n");
-      printf("[-read | dist filename | next filename]\n[-write | dist filename | next filename]\n");
-      printf("[-region | region name]\n[-country | country name]\n");
+      printf("Optional Flags:\n");
+      printf("[-read | dist filename | next filename]: Read FW from provided files.\n[-write | dist filename | next filename]: Write FW to provided files.\n");
+      printf("[-readc | filename]: Read Centrality from provided file.\n[-writec | filename]: Write Centrality to provided file.\n");
+      printf("[-region | region name]: Do not use with -country!\n[-country | country name]: Do not use with -region!\n");
       printf("[-airline | airline abbreviation (see airlines.dat)]\n");
-      printf("[-src | source for single test] [-dst | destination for single test]\n");
       printf("[-c | optional: minimum outgoing routes, default 0]: calculate centrality.\n");
-      printf("[-l]: use large dataset.\n");
-      printf("[-q]: query the graph.\n");
+      printf("[-routes]: query the graph for paths.\n");
+      printf("[-s]: use small dataset.\n");
+      printf("[-q]: query the graph for centrality.\n");
+      printf("[-h]: help\n");
       return 0;
     }
     if (!strcmp(argv[arg], "-routes")) {
-      arg++;
-      routecount = atoi(argv[arg]);
+      routes = true;
     }
-    if (!strcmp(argv[arg], "-src")) {
-      arg++;
-      src = (argv[arg]);
-    }
-    if (!strcmp(argv[arg], "-dst")) {
-      arg++;
-      dst = (argv[arg]);
-    }
-    if (!strcmp(argv[arg], "-l")) {
-      afile = "data/airports.dat";
-      rfile = "data/routes.dat";
+    if (!strcmp(argv[arg], "-s")) {
+      afile = "data/small_airports.dat";
+      rfile = "data/small_routes.dat";
     }
     if (!strcmp(argv[arg], "-read")) {
       arg++;
@@ -88,6 +81,16 @@ auto main(int argc, char** argv) -> int {
     if (!strcmp(argv[arg], "-q")) {
       query = true;
     }
+    if (!strcmp(argv[arg], "-readc")) {
+      arg++;
+      readc = true;
+      centf = argv[arg];
+    }
+    if (!strcmp(argv[arg], "-writec")) {
+      arg++;
+      readc = false;
+      centf = argv[arg];
+    }
   }
   auto const airports_file = std::string{afile};
   auto const routes_file = std::string{rfile};
@@ -124,34 +127,36 @@ auto main(int argc, char** argv) -> int {
     graph.writeFW(distf, pathf);
   }
 
-  if (!src.empty() && !dst.empty()) {
+  while (routes) {
+    printf("Please input source and destination\n");
+    std::string src = "", dst = "";
+    printf("src: ");
+    std::cin >> src;
+    if (src == "q") break;
+    printf("\ndst: ");
+    std::cin >> dst;
+    if (dst == "q") break;
     graph.pathReconstruction(src, dst);
-  }
-
-  if (routecount) {
-    for (auto i = 0; i < routecount; i++) {
-      printf("Please input source and destination\n");
-      std::string src = "", dst = "";
-      printf("src: ");
-      std::cin >> src;
-      printf("\ndst: ");
-      std::cin >> dst;
-      printf("\n");
-      graph.pathReconstruction(src, dst);
-    }
+    printf("Type 'q' to quit. ");
   }
 
 
   printf("Airports: %ld; Routes: %ld\n", graph.numAirports(), graph.numRoutes());
 
   if (centSize >= 0) {
-    graph.generateCentrality(centSize);
+    if (centf.size() && readc) {
+      graph.readBC(centf);
+    }
+    else {
+      graph.generateCentrality(centSize);
+    }
+    if (centf.size() && !readc) {
+      graph.writeBC(centf);
+    }
     auto minmax = graph.minmax();
     printf("The most central airport is %s\n", minmax.second.c_str());
     printf("The least central airport is %s\n", minmax.first.c_str());
   }
-
-  centSize = 0;
 
   while (query) {
     printf("Enter the abbreviation for the airport you'd like to know more about:\n");
